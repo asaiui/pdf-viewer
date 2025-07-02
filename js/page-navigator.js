@@ -84,15 +84,8 @@ class PageNavigator {
             }
         });
 
-        // 目次リンク
-        document.querySelectorAll('.toc-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageNumber = parseInt(e.target.dataset.page);
-                this.goToPage(pageNumber);
-                this.viewer.mobileMenu.closeMobileMenu();
-            });
-        });
+        // 目次リンク処理は main.js で統一管理されるため、ここでは削除
+        // main.js の initializeEventListeners() で処理される
 
         // キーボードショートカット
         document.addEventListener('keydown', (e) => {

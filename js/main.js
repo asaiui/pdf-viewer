@@ -12,10 +12,11 @@ class ISCPDFViewer {
         this.baseScale = 1.0;
         this.currentZoom = 1.2;
         this.isLoading = false;
+        this.navigationTimeout = null;
 
         // DOM要素への参照
         this.canvas = document.getElementById('pdfCanvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
         this.pageInput = document.getElementById('pageInput');
         this.totalPagesSpan = document.getElementById('totalPages');
         this.sidebarTotalPages = document.getElementById('sidebarTotalPages');
@@ -38,9 +39,23 @@ class ISCPDFViewer {
     }
 
     initializeModules() {
+        // CDN マネージャーを最初に初期化
+        if (typeof CDNManager !== 'undefined') {
+            this.cdnManager = new CDNManager();
+        }
+        
         // 機能モジュールが存在する場合のみ初期化
         if (typeof PDFLoader !== 'undefined') {
             this.pdfLoader = new PDFLoader(this);
+        }
+        if (typeof ProgressiveLoader !== 'undefined') {
+            this.progressiveLoader = new ProgressiveLoader(this);
+        }
+        if (typeof PerformanceMonitor !== 'undefined') {
+            this.performanceMonitor = new PerformanceMonitor(this);
+        }
+        if (typeof ParallelRenderer !== 'undefined') {
+            this.parallelRenderer = new ParallelRenderer(this);
         }
         if (typeof PageNavigator !== 'undefined') {
             this.pageNavigator = new PageNavigator(this);
@@ -59,6 +74,15 @@ class ISCPDFViewer {
         }
         if (typeof DemoContent !== 'undefined') {
             this.demoContent = new DemoContent(this);
+        }
+        if (typeof IntelligentPrefetch !== 'undefined') {
+            this.intelligentPrefetch = new IntelligentPrefetch(this);
+        }
+        if (typeof RealtimeDashboard !== 'undefined') {
+            this.realtimeDashboard = new RealtimeDashboard(this);
+        }
+        if (typeof AdaptiveQualityManager !== 'undefined') {
+            this.adaptiveQuality = new AdaptiveQualityManager(this);
         }
 
         // 内蔵機能の初期化
@@ -148,12 +172,19 @@ class ISCPDFViewer {
 
     async loadPDFFile(pdfUrl) {
         try {
+            console.log('📖 Starting PDF load from:', pdfUrl);
             this.updateProgress(60, 'PDFを解析中...');
             
             const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
             this.pdf = pdf;
             this.totalPages = pdf.numPages;
             
+            // PDFLoaderにPDFインスタンスを設定
+            if (this.pdfLoader) {
+                this.pdfLoader.pdf = pdf;
+            }
+            
+            console.log('📄 PDF loaded successfully. Pages:', this.totalPages);
             this.updateProgress(80, 'ページ情報を取得中...');
             
             // UI更新
@@ -171,12 +202,20 @@ class ISCPDFViewer {
             this.canvas.style.display = 'block';
             this.canvas.classList.add('fade-in');
             
+            // プログレッシブローディングの開始
+            if (this.progressiveLoader) {
+                console.log('🔄 Starting progressive loading...');
+                await this.progressiveLoader.loadPDFProgressive(pdf);
+            }
+            
             // 最初のページをレンダリング
+            console.log('🎨 Rendering first page...');
             await this.renderPage();
             this.updateControls();
             
             this.updateProgress(100, '読み込み完了');
-            this.updateLoadStatus('✅ 学校案内PDFを表示中');
+            this.updateLoadStatus('✅ 学校案内PDFを表示中（プログレッシブ対応）');
+            console.log('🎉 PDF initialization completed successfully');
             
             return true;
             
@@ -187,7 +226,35 @@ class ISCPDFViewer {
     }
 
     async renderPage() {
-        if (!this.pdf || this.isLoading) return;
+        console.log('🎨 renderPage called - PDF:', !!this.pdf, 'PDFLoader:', !!this.pdfLoader, 'currentPage:', this.currentPage);
+        
+        // PDFLoaderが利用可能な場合は優先使用
+        if (this.pdfLoader && this.pdf) {
+            try {
+                console.log('📋 Using PDFLoader for rendering page', this.currentPage);
+                await this.pdfLoader.renderPage(this.currentPage);
+                this.updateActiveTocItem();
+                this.updateZoomDisplay();
+                this.updatePageDisplay();
+                console.log('✅ PDFLoader rendering completed');
+                return;
+            } catch (error) {
+                console.warn('PDFLoader renderPage failed, trying fallback:', error);
+            }
+        }
+
+        // フォールバック: 内蔵レンダリング
+        if (!this.pdf || this.isLoading) {
+            // PDFが読み込まれていない場合はデモを表示しない
+            if (!this.pdf) {
+                console.warn('PDF not loaded, skipping render');
+                return;
+            }
+            console.warn('Currently loading, skipping render');
+            return;
+        }
+        
+        console.log('🔄 Using fallback rendering for page', this.currentPage);
 
         try {
             this.isLoading = true;
@@ -231,7 +298,28 @@ class ISCPDFViewer {
             
         } catch (error) {
             console.error('ページ描画エラー:', error);
-            this.showDemoContent();
+            // PDFが正常に読み込まれている場合はデモを表示しない
+            if (this.pdf && this.currentPage <= this.totalPages) {
+                console.warn(`Failed to render page ${this.currentPage}, but PDF is loaded. Retrying...`);
+                // 少し待ってからリトライ（最大3回）
+                if (!this.retryCount) this.retryCount = 0;
+                if (this.retryCount < 3) {
+                    this.retryCount++;
+                    setTimeout(() => {
+                        if (this.pdf) {
+                            console.log(`🔄 Retry attempt ${this.retryCount} for page ${this.currentPage}`);
+                            this.renderPage();
+                        }
+                    }, 100 * this.retryCount);
+                } else {
+                    console.error('Maximum retry attempts reached, giving up');
+                    this.retryCount = 0;
+                }
+            } else {
+                // PDFが読み込まれていない場合のみデモを表示
+                console.error('PDF not loaded or invalid page, showing demo content');
+                this.showDemoContent();
+            }
         } finally {
             this.isLoading = false;
         }
@@ -323,15 +411,63 @@ class ISCPDFViewer {
         this.canvas.classList.add('fade-in');
     }
 
-    // ページナビゲーション機能
-    goToPage(pageNumber) {
-        const newPage = Math.max(1, Math.min(pageNumber, this.totalPages || 50));
-        if (newPage !== this.currentPage) {
-            this.currentPage = newPage;
-            this.pageInput.value = this.currentPage;
+    // ページナビゲーション機能（デバウンス付き）
+    goToPage(pageNumber, immediate = false) {
+        console.log(`🎯 goToPage called: pageNumber=${pageNumber}, immediate=${immediate}, PDF loaded=${!!this.pdf}, totalPages=${this.totalPages}`);
+        
+        // PDFが読み込まれていない場合でもページ表示は可能（デモコンテンツ）
+        if (!this.pdf && !this.totalPages) {
+            console.warn('PDF not loaded and no demo pages, cannot navigate to page', pageNumber);
+            return;
+        }
+        
+        const maxPages = this.totalPages || 50;
+        const newPage = Math.max(1, Math.min(pageNumber, maxPages));
+        
+        console.log(`📍 Page navigation: currentPage=${this.currentPage} -> newPage=${newPage} (max=${maxPages})`);
+        
+        if (newPage === this.currentPage) {
+            console.log('📍 Already on the same page, skipping navigation');
+            return;
+        }
+        
+        // 前回のナビゲーションタイマーをクリア
+        if (this.navigationTimeout) {
+            clearTimeout(this.navigationTimeout);
+        }
+        
+        // ページ番号を即座に更新（UI の応答性向上）
+        this.currentPage = newPage;
+        this.pageInput.value = this.currentPage;
+        this.updateControls();
+        this.updatePageDisplay();
+        this.updateLoadStatus(`📄 ページ ${this.currentPage} を表示中`);
+        
+        // レンダリングはデバウンスして実行（連続操作時の負荷軽減）
+        const executeRender = () => {
+            console.log(`🎨 Executing render for page ${this.currentPage}`);
+            
+            // 現在のレンダリングをキャンセル
+            if (this.pdfLoader && this.pdfLoader.currentRenderTask) {
+                this.pdfLoader.currentRenderTask.cancel();
+            }
+            
+            // 新しいページをレンダリング
             this.renderPage();
-            this.updateControls();
-            this.updateLoadStatus(`📄 ページ ${this.currentPage} を表示中`);
+            
+            // プログレッシブローダーに現在ページ変更を通知
+            if (this.progressiveLoader) {
+                this.progressiveLoader.scheduleAdjacentPreload();
+            }
+        };
+        
+        if (immediate) {
+            console.log('⚡ Immediate render requested');
+            executeRender();
+        } else {
+            console.log('⏱️ Debounced render scheduled (100ms)');
+            // 100ms後にレンダリング実行（デバウンス）
+            this.navigationTimeout = setTimeout(executeRender, 100);
         }
     }
 
@@ -506,14 +642,30 @@ class ISCPDFViewer {
             });
         }
         
-        // 目次リンク
+        // 目次リンク（統一的な処理）
         document.querySelectorAll('.toc-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const pageNumber = parseInt(e.target.dataset.page) || parseInt(e.target.closest('[data-page]').dataset.page);
-                if (pageNumber) {
-                    this.goToPage(pageNumber);
+                
+                // より確実にdata-page属性を取得
+                let pageNumber;
+                const target = e.target;
+                const linkElement = target.closest('.toc-link');
+                
+                if (linkElement && linkElement.dataset.page) {
+                    pageNumber = parseInt(linkElement.dataset.page);
+                    console.log('🔗 TOC clicked - Target:', target.tagName, 'Page:', pageNumber, 'Link element:', linkElement);
+                } else {
+                    console.warn('⚠️ TOC click - No page number found', target);
+                    return;
+                }
+                
+                if (pageNumber && !isNaN(pageNumber)) {
+                    console.log(`📖 Navigating to page ${pageNumber} from TOC`);
+                    this.goToPage(pageNumber, true); // immediateフラグを設定
                     this.closeMobileMenu();
+                } else {
+                    console.warn('⚠️ Invalid page number:', pageNumber);
                 }
             });
         });
@@ -672,6 +824,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 // アプリケーション開始
 document.addEventListener('DOMContentLoaded', () => {
+    
     // フォントの読み込み完了を待つ
     if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
@@ -682,10 +835,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// サービスワーカー登録（オフライン対応）
+// サービスワーカー登録（オフライン対応・キャッシュ最適化）
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        console.log('Service Worker機能が利用可能です');
-        // navigator.serviceWorker.register('./sw.js');
+    window.addEventListener('load', async () => {
+        try {
+            const registration = await navigator.serviceWorker.register('./sw.js');
+            console.log('Service Worker registered successfully:', registration);
+            
+            // PDF読み込み後にキャッシュ通知
+            if (registration.active) {
+                registration.active.postMessage({
+                    type: 'CACHE_PDF',
+                    url: window.location.origin + '/pdf/school-guide-2026.pdf'
+                });
+            }
+            
+            // バックグラウンド同期の登録
+            if ('sync' in window.ServiceWorkerRegistration.prototype) {
+                await registration.sync.register('pdf-preload');
+            }
+            
+        } catch (error) {
+            console.warn('Service Worker registration failed:', error);
+        }
     });
 }
