@@ -1,0 +1,67 @@
+{
+    "name": "情報科学専門学校 学校案内 2026",
+    "short_name": "ISC学校案内",
+    "description": "岩崎学園情報科学専門学校の学校案内2026年版デジタルパンフレット",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#0066CC",
+    "orientation": "any",
+    "scope": "./",
+    "lang": "ja",
+    "categories": ["education", "reference"],
+    "icons": [
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjMDA2NkNDIiByeD0iMjQiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiI+CjxwYXRoIGQ9Ik0yNCAyNGg0OHYxMkgyNHoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCA0OGg0OHYxMkgyNHoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCA3Mmg0OHYxMkgyNHoiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjQ4IiBjeT0iNDIiIHI9IjYiIGZpbGw9IiNGRjY2MDAiLz4KPC9zdmc+",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSIjMDA2NkNDIiByeD0iNjQiLz4KPHN2ZyB4PSIxMjgiIHk9IjEyOCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiPgo8cGF0aCBkPSJNNjQgNjRoMTI4djMySDY0eiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTY0IDEyOGgxMjh2MzJINjR6IiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNjQgMTkyaDEyOHYzMkg2NHoiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjEyOCIgY3k9IjExMiIgcj0iMTYiIGZpbGw9IiNGRjY2MDAiLz4KPC9zdmc+",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "images/screenshot-desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "デスクトップ版の表示"
+        },
+        {
+            "src": "images/screenshot-mobile.png", 
+            "sizes": "360x640",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "モバイル版の表示"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "最初のページ",
+            "short_name": "表紙",
+            "description": "学校案内の表紙を開く",
+            "url": "./index.html?page=1",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiBmaWxsPSIjMDA2NkNDIiByeD0iMTIiLz4KPHN2ZyB4PSIyNCIgeT0iMjQiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+Cjx0ZXh0IHg9IjI0IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MSMjPC90ZXh0Pgo8L3N2Zz4=",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "学科紹介",
+            "short_name": "学科",
+            "description": "学科・コース紹介ページを開く",
+            "url": "./index.html?page=11",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiBmaWxsPSIjMDA2NkNDIiByeD0iMTIiLz4KPHN2ZyB4PSIyNCIgeT0iMjQiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+Cjx0ZXh0IHg9IjI0IiB5PSIzMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+📚PC90ZXh0Pgo8L3N2Zz4=",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ]
+}
