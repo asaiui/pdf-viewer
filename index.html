@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情報科学専門学校 学校案内 2026 | PDFビューア</title>
+    <meta name="description" content="岩崎学園情報科学専門学校の学校案内2026年版をオンラインで閲覧できます。IT・プログラミング・AI・IoT・ゲーム開発など幅広い学科を紹介。">
+    <meta name="keywords" content="情報科学専門学校,岩崎学園,IT専門学校,プログラミング,AI,IoT,ゲーム開発,横浜駅">
+
+    <!-- Open Graph / SNS -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="情報科学専門学校 学校案内 2026">
+    <meta property="og:description" content="神奈川県初のIT専門学校として40年の実績。横浜駅徒歩1分の好立地で最新のIT教育を提供。">
+    <meta property="og:url" content="https://asaiui.github.io/pdf-viewer/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDA2NkNDIi8+Cjx0ZXh0IHg9IjE2IiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SVNDPC90ZXh0Pgo8L3N2Zz4K">
+
+    <link rel="stylesheet" href="style.css">
+    <!-- PDF.jsのプリロード -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" as="script">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js" as="script">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">
+                    ≡
+                </button>
+                <div class="header-logo">ISC</div>
+                <span>情報科学専門学校 学校案内 2026</span>
+            </div>
+            <div class="header-info">
+                <span class="header-badge">1983年創立</span>
+                <span>横浜駅徒歩1分</span>
+                <span class="header-badge">就職率98.9%</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div style="font-weight: 600; color: var(--primary-500); margin-bottom: 4px;">
+                    📚 学校案内2026
+                </div>
+                <div style="font-size: 14px; color: var(--text-secondary);">
+                    総ページ数: <span id="sidebarTotalPages">読み込み中...</span>
+                </div>
+            </div>
+
+            <nav class="toc">
+                <h3>目次</h3>
+
+                <div class="toc-section">
+                    <div class="toc-section-title">学校紹介</div>
+                    <ul class="toc-list">
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="1">表紙・目次</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="3">学校長あいさつ</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="5">ISCの10の魅力</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="7">大学との違い</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="9">学びのスタイル</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="toc-section">
+                    <div class="toc-section-title">学科・コース紹介</div>
+                    <ul class="toc-list">
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="11">学科・コース一覧</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="13">情報セキュリティ学科（4年制）</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="15">実践AI科（4年制）</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="17">先端ITシステム科（3年制）</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="19">情報処理科（2年制）</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="21">実践IoT科（2年制）</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="23">Web技術科（2年制）</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="25">ビジネス科（2年制）</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="toc-section">
+                    <div class="toc-section-title">サポート体制</div>
+                    <ul class="toc-list">
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="27">資格取得サポート</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="29">就職サポート</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="31">卒業生の声</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="33">企業からの評価</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="toc-section">
+                    <div class="toc-section-title">施設・環境</div>
+                    <ul class="toc-list">
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="35">充実の設備・施設</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="37">キャンパスライフ</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="39">学生の1日</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="41">年間行事</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="toc-section">
+                    <div class="toc-section-title">入学情報</div>
+                    <ul class="toc-list">
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="43">入学制度・学費</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="45">奨学金制度</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="47">オープンキャンパス</a>
+                        </li>
+                        <li class="toc-item">
+                            <a href="#" class="toc-link" data-page="49">アクセス・お問い合わせ</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="pdf-viewer-container" id="pdfViewerContainer">
+                <div class="loading-indicator fade-in" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <div class="loading-text">PDFを読み込み中...</div>
+                    <div class="loading-subtext">情報科学専門学校の学校案内を準備しています</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">読み込み準備中...</div>
+                    </div>
+                </div>
+                <canvas id="pdfCanvas" class="pdf-canvas" style="display: none;"></canvas>
+                <div class="zoom-level-indicator" id="zoomLevelIndicator">100%</div>
+            </div>
+
+            <!-- 全画面時のコントロール -->
+            <div class="fullscreen-controls" id="fullscreenControls">
+                <button class="control-btn" id="fullscreenPrevBtn" aria-label="前のページ">◀</button>
+                <div class="page-info">
+                    <span id="fullscreenCurrentPage">1</span>/<span id="fullscreenTotalPages">--</span>
+                </div>
+                <button class="control-btn" id="fullscreenNextBtn" aria-label="次のページ">▶</button>
+                <button class="zoom-btn" id="fullscreenZoomOutBtn">−</button>
+                <div class="zoom-display" id="fullscreenZoomDisplay">100%</div>
+                <button class="zoom-btn" id="fullscreenZoomInBtn">＋</button>
+                <button class="zoom-btn" id="exitFullscreenBtn" aria-label="全画面終了">✕</button>
+            </div>
+            
+            <div class="controls" id="controls">
+                <div class="page-controls">
+                    <button class="control-btn" id="firstPageBtn" aria-label="最初のページ" title="最初のページ">⇤</button>
+                    <button class="control-btn" id="prevPageBtn" aria-label="前のページ" title="前のページ (←)">◀</button>
+                    <div class="page-info">
+                        <input type="number" id="pageInput" class="page-input" value="1" min="1" aria-label="ページ番号">
+                        <span>/</span>
+                        <span id="totalPages">--</span>
+                    </div>
+                    <button class="control-btn" id="nextPageBtn" aria-label="次のページ" title="次のページ (→)">▶</button>
+                    <button class="control-btn" id="lastPageBtn" aria-label="最後のページ" title="最後のページ">⇥</button>
+                </div>
+
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomOutBtn" aria-label="縮小" title="縮小 (-)">−</button>
+                    <div class="zoom-display" id="zoomDisplay">100%</div>
+                    <button class="zoom-btn" id="zoomInBtn" aria-label="拡大" title="拡大 (+)">＋</button>
+                    <button class="zoom-btn" id="fitWidthBtn" aria-label="幅に合わせる" title="幅に合わせる">幅調整</button>
+                    <button class="zoom-btn" id="fitPageBtn" aria-label="ページに合わせる" title="全体表示">全体</button>
+                    <button class="zoom-btn fullscreen-btn" id="fullscreenBtn" aria-label="全画面表示" title="全画面表示 (F)">⛶</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- 機能別JSファイル -->
+    <script src="js/pdf-loader.js"></script>
+    <script src="js/page-navigator.js"></script>
+    <script src="js/zoom-manager.js"></script>
+    <script src="js/fullscreen-manager.js"></script>
+    <script src="js/content-analyzer.js"></script>
+    <script src="js/mobile-menu.js"></script>
+    <script src="js/demo-content.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
