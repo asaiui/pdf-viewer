@@ -606,7 +606,7 @@ body {
 /* ズーム時のドラッグ機能 */
 .pdf-canvas.zoomable {
     cursor: grab;
-    transition: none;
+    transition: transform 0.2s ease-out;
 }
 
 .pdf-canvas.zoomable:active {
@@ -614,7 +614,17 @@ body {
 }
 
 .pdf-canvas.zoomed {
-    cursor: move;
+    cursor: grab;
+    transform-origin: center center;
+}
+
+.pdf-canvas.zoomed:active {
+    cursor: grabbing;
+}
+
+/* スムーズズーム時のアニメーション */
+.pdf-canvas.zoom-animating {
+    transition: none !important;
 }
 
 /* ズームレベル表示 */
@@ -622,14 +632,27 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     display: none;
     z-index: 1000;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.zoom-level-indicator.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.zoom-level-indicator.hide {
+    opacity: 0;
+    transform: scale(0.9);
 }
 
 .pdf-viewer-container.fullscreen .zoom-level-indicator {

@@ -16,7 +16,11 @@ class ISCPDFViewer {
 
         // DOM要素への参照
         this.canvas = document.getElementById('pdfCanvas');
-        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+        this.ctx = this.canvas.getContext('2d', { 
+            willReadFrequently: true,
+            alpha: false,
+            desynchronized: true
+        });
         this.pageInput = document.getElementById('pageInput');
         this.totalPagesSpan = document.getElementById('totalPages');
         this.sidebarTotalPages = document.getElementById('sidebarTotalPages');
@@ -487,31 +491,51 @@ class ISCPDFViewer {
         this.goToPage(this.totalPages || 50);
     }
 
-    // ズーム機能
+    // ズーム機能（ZoomManagerに委譲）
     zoomIn() {
-        this.currentZoom = Math.min(this.currentZoom * 1.2, 3.0);
-        this.renderPage();
+        if (this.zoomManager) {
+            this.zoomManager.zoomIn();
+        } else {
+            // フォールバック
+            this.currentZoom = Math.min(this.currentZoom * 1.2, 3.0);
+            this.renderPage();
+        }
         this.updateLoadStatus('🔍 拡大表示中');
     }
 
     zoomOut() {
-        this.currentZoom = Math.max(this.currentZoom / 1.2, 0.5);
-        this.renderPage();
+        if (this.zoomManager) {
+            this.zoomManager.zoomOut();
+        } else {
+            // フォールバック
+            this.currentZoom = Math.max(this.currentZoom / 1.2, 0.5);
+            this.renderPage();
+        }
         this.updateLoadStatus('🔍 縮小表示中');
     }
 
     fitToWidth() {
-        if (this.canvas.width > 0) {
-            const container = this.pdfViewerContainer;
-            this.currentZoom = (container.clientWidth - 40) / (this.canvas.width / (window.devicePixelRatio || 1)) * this.currentZoom;
-            this.renderPage();
-            this.updateLoadStatus('📐 幅に合わせて表示');
+        if (this.zoomManager) {
+            this.zoomManager.fitToWidth();
+        } else {
+            // フォールバック
+            if (this.canvas.width > 0) {
+                const container = this.pdfViewerContainer;
+                this.currentZoom = (container.clientWidth - 40) / (this.canvas.width / (window.devicePixelRatio || 1)) * this.currentZoom;
+                this.renderPage();
+            }
         }
+        this.updateLoadStatus('📐 幅に合わせて表示');
     }
 
     fitToPage() {
-        this.currentZoom = 1.0;
-        this.renderPage();
+        if (this.zoomManager) {
+            this.zoomManager.fitToPage();
+        } else {
+            // フォールバック
+            this.currentZoom = 1.0;
+            this.renderPage();
+        }
         this.updateLoadStatus('📱 全体表示');
     }
 
@@ -746,17 +770,7 @@ class ISCPDFViewer {
             }, 250);
         });
 
-        // マウスホイールでのズーム（Ctrl押下時）
-        this.canvas.addEventListener('wheel', (e) => {
-            if (e.ctrlKey || e.metaKey) {
-                e.preventDefault();
-                if (e.deltaY < 0) {
-                    this.zoomIn();
-                } else {
-                    this.zoomOut();
-                }
-            }
-        });
+        // マウスホイールでのズーム処理はZoomManagerで統一管理
     }
 
     initializeMobileMenuBuiltin() {
