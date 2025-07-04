@@ -20,7 +20,7 @@ class PDFLoader {
                 throw new Error(`PDFファイルが見つかりません: ${pdfUrl}`);
             }
 
-            // より確実な読み込み設定（CMap最適化）
+            // より確実な読み込み設定（CMap最適化・修正版）
             const loadingTask = pdfjsLib.getDocument({
                 url: pdfUrl,
                 disableRange: false,
@@ -33,7 +33,10 @@ class PDFLoader {
                     'Cache-Control': 'no-cache'
                 },
                 maxImageSize: 4096 * 4096,
-                stopAtErrors: false
+                stopAtErrors: false,
+                // CMapの基本設定を追加
+                useOnlyCssZoom: false,
+                useSystemFonts: false
             });
 
             // プログレス表示

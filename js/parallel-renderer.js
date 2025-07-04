@@ -60,9 +60,22 @@ class ParallelRenderer {
     
     // 並列ページレンダリング
     async renderPageParallel(pageNumber, scale = 1.0, priority = 'normal') {
+        // パラメータのバリデーション
+        if (!pageNumber || !Number.isInteger(pageNumber) || pageNumber < 1) {
+            console.error('❌ Invalid pageNumber for parallel rendering:', pageNumber);
+            throw new Error(`Invalid pageNumber: ${pageNumber}`);
+        }
+        
+        if (!scale || scale <= 0) {
+            console.error('❌ Invalid scale for parallel rendering:', scale);
+            scale = 1.0; // デフォルト値にフォールバック
+        }
+        
         return new Promise((resolve, reject) => {
             const requestId = ++this.requestCounter;
             const startTime = performance.now();
+            
+            console.log(`🎯 Parallel render request: page=${pageNumber}, scale=${scale}, priority=${priority}`);
             
             const request = {
                 requestId,
@@ -149,23 +162,36 @@ class ParallelRenderer {
     
     // ワーカーメッセージの処理
     handleWorkerMessage(workerId, message) {
-        const worker = this.workers[workerId];
-        
-        switch (message.type) {
-            case 'renderComplete':
-                this.handleRenderComplete(workerId, message);
-                break;
-                
-            case 'renderError':
-                this.handleRenderError(workerId, message);
-                break;
-                
-            case 'stats':
-                console.log(`Worker ${workerId} stats:`, message.data);
-                break;
-                
-            default:
-                console.log(`Worker ${workerId} message:`, message);
+        try {
+            const worker = this.workers[workerId];
+            
+            if (!message || !message.type) {
+                console.warn(`⚠️ Worker ${workerId} sent invalid message:`, message);
+                return;
+            }
+            
+            switch (message.type) {
+                case 'renderComplete':
+                    this.handleRenderComplete(workerId, message);
+                    break;
+                    
+                case 'renderError':
+                    this.handleRenderError(workerId, message);
+                    break;
+                    
+                case 'stats':
+                    console.log(`📊 Worker ${workerId} stats:`, message.data);
+                    break;
+                    
+                case 'qualityUpdated':
+                    console.log(`🎯 Worker ${workerId} quality updated:`, message.data);
+                    break;
+                    
+                default:
+                    console.log(`📨 Worker ${workerId} message:`, message);
+            }
+        } catch (error) {
+            console.error(`❌ Error handling worker ${workerId} message:`, error, message);
         }
     }
     
@@ -277,12 +303,44 @@ class ParallelRenderer {
     
     // ビューポート計算
     calculateViewport(pageNumber, scale) {
-        // 簡易的なビューポート計算
-        const container = this.viewer.pdfViewerContainer;
-        const width = (container?.clientWidth || 800) * scale;
-        const height = (container?.clientHeight || 1000) * scale;
+        // パラメータのバリデーション
+        if (!pageNumber || !scale) {
+            console.error('❌ Invalid parameters for calculateViewport:', { pageNumber, scale });
+            return { width: 800, height: 1000 }; // デフォルト値
+        }
         
-        return { width, height };
+        try {
+            // コンテナサイズの取得
+            const container = this.viewer.pdfViewerContainer;
+            if (!container) {
+                console.warn('⚠️ Container not found, using default viewport');
+                return { width: 800, height: 1000 };
+            }
+            
+            const containerWidth = container.clientWidth || 800;
+            const containerHeight = container.clientHeight || 1000;
+            
+            // PDF基本ページサイズ（A4想定: 595x842 pt）
+            const baseWidth = 595;
+            const baseHeight = 842;
+            
+            // コンテナに合わせたスケール計算
+            const containerScale = Math.min(
+                (containerWidth - 40) / baseWidth,
+                (containerHeight - 40) / baseHeight
+            ) * 0.9;
+            
+            const finalScale = containerScale * scale;
+            const width = Math.max(1, Math.floor(baseWidth * finalScale));
+            const height = Math.max(1, Math.floor(baseHeight * finalScale));
+            
+            console.log(`📐 Viewport calculated: ${width}x${height} (page=${pageNumber}, scale=${scale.toFixed(2)})`);
+            
+            return { width, height };
+        } catch (error) {
+            console.error('❌ Error calculating viewport:', error);
+            return { width: 800, height: 1000 };
+        }
     }
     
     // ImageDataをキャンバスに描画

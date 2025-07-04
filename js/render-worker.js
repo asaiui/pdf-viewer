@@ -82,8 +82,18 @@ class PDFRenderWorker {
     
     // 実際のレンダリング処理
     async performRendering(pageNumber, scale, viewport) {
+        // パラメータのバリデーション
+        if (!viewport || !viewport.width || !viewport.height) {
+            throw new Error(`Invalid viewport: ${JSON.stringify(viewport)}`);
+        }
+        
+        const canvasWidth = Math.max(1, Math.floor(viewport.width * scale));
+        const canvasHeight = Math.max(1, Math.floor(viewport.height * scale));
+        
+        console.log(`Worker: Creating canvas ${canvasWidth}x${canvasHeight} for page ${pageNumber}`);
+        
         // OffscreenCanvas を使用
-        const canvas = new OffscreenCanvas(viewport.width * scale, viewport.height * scale);
+        const canvas = new OffscreenCanvas(canvasWidth, canvasHeight);
         const context = canvas.getContext('2d');
         
         // PDF.jsでのレンダリング（省略版）
