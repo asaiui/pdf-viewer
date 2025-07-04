@@ -6,9 +6,9 @@
 const APP_CONFIG = {
     // PDFファイルのパス設定
     PDF_PATHS: [
-        'pdf/school-guide-2026.pdf',
-        './pdf/school-guide-2026.pdf',
-        'school-guide-2026.pdf',
+        'pdf/test.pdf',
+        './pdf/test.pdf',
+        'test.pdf',
         'pdf/250307_学校案内2026最終データ_A3見開き_情報科学専門学校様 (1).pdf'
     ],
 
@@ -32,7 +32,7 @@ const APP_CONFIG = {
             }
         ]
     },
-    
+
     // PDF.jsのファイル構成
     PDFJS_FILES: {
         pdf: '/pdf.min.js',

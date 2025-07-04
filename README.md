@@ -168,7 +168,7 @@ isc-pdf-viewer/
 │   ├── mobile-menu.js      # モバイルメニュー
 │   └── demo-content.js     # デモコンテンツ
 ├── pdf/                    # PDFファイル格納
-│   └── school-guide-2026.pdf
+│   └── test.pdf
 └── images/                 # 画像ファイル
     ├── isc-logo.png
     ├── screenshot-desktop.png

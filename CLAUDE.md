@@ -43,7 +43,7 @@ Since this is a frontend-only application with no build process:
 - `index.html` - Main application entry point
 - `style.css` - Complete styling including responsive design and dark mode
 - `js/` - Modular JavaScript components
-- `pdf/` - Contains the target PDF file (`school-guide-2026.pdf`)
+- `pdf/` - Contains the target PDF file (`test.pdf`)
 - `manifest.json` - PWA configuration
 
 ## Important Implementation Details
