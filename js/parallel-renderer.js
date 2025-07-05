@@ -25,7 +25,6 @@ class ParallelRenderer {
     
     // ワーカーの初期化
     async initializeWorkers() {
-        console.log(`Initializing ${this.maxWorkers} render workers...`);
         
         for (let i = 0; i < this.maxWorkers; i++) {
             try {
@@ -36,7 +35,6 @@ class ParallelRenderer {
                 };
                 
                 worker.onerror = (error) => {
-                    console.error(`Worker ${i} error:`, error);
                     this.handleWorkerError(i, error);
                 };
                 
@@ -51,23 +49,19 @@ class ParallelRenderer {
                 this.workerQueue.push(i);
                 
             } catch (error) {
-                console.error(`Failed to create worker ${i}:`, error);
             }
         }
         
-        console.log(`${this.workers.length} render workers initialized successfully`);
     }
     
     // 並列ページレンダリング
     async renderPageParallel(pageNumber, scale = 1.0, priority = 'normal') {
         // パラメータのバリデーション
         if (!pageNumber || !Number.isInteger(pageNumber) || pageNumber < 1) {
-            console.error('❌ Invalid pageNumber for parallel rendering:', pageNumber);
             throw new Error(`Invalid pageNumber: ${pageNumber}`);
         }
         
         if (!scale || scale <= 0) {
-            console.error('❌ Invalid scale for parallel rendering:', scale);
             scale = 1.0; // デフォルト値にフォールバック
         }
         
@@ -75,7 +69,6 @@ class ParallelRenderer {
             const requestId = ++this.requestCounter;
             const startTime = performance.now();
             
-            console.log(`🎯 Parallel render request: page=${pageNumber}, scale=${scale}, priority=${priority}`);
             
             const request = {
                 requestId,
@@ -139,7 +132,6 @@ class ParallelRenderer {
             }
         });
         
-        console.log(`Assigned page ${request.pageNumber} to worker ${workerId}`);
     }
     
     // リクエストをキューに追加
@@ -157,7 +149,6 @@ class ParallelRenderer {
         }
         
         this.workerQueue.splice(insertIndex, 0, request);
-        console.log(`Queued page ${request.pageNumber} (priority: ${request.priority})`);
     }
     
     // ワーカーメッセージの処理
@@ -166,7 +157,6 @@ class ParallelRenderer {
             const worker = this.workers[workerId];
             
             if (!message || !message.type) {
-                console.warn(`⚠️ Worker ${workerId} sent invalid message:`, message);
                 return;
             }
             
@@ -180,18 +170,15 @@ class ParallelRenderer {
                     break;
                     
                 case 'stats':
-                    console.log(`📊 Worker ${workerId} stats:`, message.data);
                     break;
                     
                 case 'qualityUpdated':
-                    console.log(`🎯 Worker ${workerId} quality updated:`, message.data);
                     break;
                     
                 default:
-                    console.log(`📨 Worker ${workerId} message:`, message);
             }
         } catch (error) {
-            console.error(`❌ Error handling worker ${workerId} message:`, error, message);
+            // Error handling worker message
         }
     }
     
@@ -202,7 +189,6 @@ class ParallelRenderer {
         const request = this.activeRequests.get(requestId);
         
         if (!request) {
-            console.warn(`No active request found for ID ${requestId}`);
             return;
         }
         
@@ -231,7 +217,6 @@ class ParallelRenderer {
         // キューから次のタスクを処理
         this.processNextInQueue(workerId);
         
-        console.log(`✅ Page ${pageNumber} rendered by worker ${workerId} in ${renderTime.toFixed(2)}ms (${fromCache ? 'cached' : 'fresh'})`);
     }
     
     // レンダリングエラーの処理
@@ -248,7 +233,6 @@ class ParallelRenderer {
         worker.busy = false;
         this.processNextInQueue(workerId);
         
-        console.error(`❌ Worker ${workerId} failed to render page ${pageNumber}:`, error);
     }
     
     // キューの次のタスクを処理
@@ -261,15 +245,12 @@ class ParallelRenderer {
     
     // ワーカーエラーの処理
     handleWorkerError(workerId, error) {
-        console.error(`Worker ${workerId} encountered an error:`, error);
-        
         // エラーしたワーカーを再起動
         this.restartWorker(workerId);
     }
     
     // ワーカーの再起動
     async restartWorker(workerId) {
-        console.log(`Restarting worker ${workerId}...`);
         
         const oldWorker = this.workers[workerId];
         oldWorker.worker.terminate();
@@ -282,7 +263,6 @@ class ParallelRenderer {
             };
             
             newWorker.onerror = (error) => {
-                console.error(`Restarted worker ${workerId} error:`, error);
                 this.handleWorkerError(workerId, error);
             };
             
@@ -294,10 +274,9 @@ class ParallelRenderer {
                 totalTime: 0
             };
             
-            console.log(`Worker ${workerId} restarted successfully`);
             
         } catch (error) {
-            console.error(`Failed to restart worker ${workerId}:`, error);
+            // Failed to restart worker
         }
     }
     
@@ -305,7 +284,6 @@ class ParallelRenderer {
     calculateViewport(pageNumber, scale) {
         // パラメータのバリデーション
         if (!pageNumber || !scale) {
-            console.error('❌ Invalid parameters for calculateViewport:', { pageNumber, scale });
             return { width: 800, height: 1000 }; // デフォルト値
         }
         
@@ -313,7 +291,6 @@ class ParallelRenderer {
             // コンテナサイズの取得
             const container = this.viewer.pdfViewerContainer;
             if (!container) {
-                console.warn('⚠️ Container not found, using default viewport');
                 return { width: 800, height: 1000 };
             }
             
@@ -334,11 +311,8 @@ class ParallelRenderer {
             const width = Math.max(1, Math.floor(baseWidth * finalScale));
             const height = Math.max(1, Math.floor(baseHeight * finalScale));
             
-            console.log(`📐 Viewport calculated: ${width}x${height} (page=${pageNumber}, scale=${scale.toFixed(2)})`);
-            
             return { width, height };
         } catch (error) {
-            console.error('❌ Error calculating viewport:', error);
             return { width: 800, height: 1000 };
         }
     }
@@ -368,11 +342,9 @@ class ParallelRenderer {
             const results = await Promise.allSettled(promises);
             const successful = results.filter(r => r.status === 'fulfilled').length;
             
-            console.log(`Batch render completed: ${successful}/${pageNumbers.length} pages`);
             return results;
             
         } catch (error) {
-            console.error('Batch render error:', error);
             throw error;
         }
     }
@@ -405,7 +377,6 @@ class ParallelRenderer {
             worker.worker.postMessage({ type: 'clearCache' });
         });
         
-        console.log('Cleared all worker caches');
     }
     
     // 品質設定の更新（AdaptiveQualityManager用）
@@ -420,7 +391,6 @@ class ParallelRenderer {
             });
         });
         
-        console.log(`Updated quality settings for ${this.workers.length} workers:`, qualitySettings.name);
     }
     
     // レンダリング優先度の設定
@@ -450,7 +420,6 @@ class ParallelRenderer {
             };
             
             newWorker.onerror = (error) => {
-                console.error(`New worker ${workerId} error:`, error);
                 this.handleWorkerError(workerId, error);
             };
             
@@ -462,10 +431,9 @@ class ParallelRenderer {
                 totalTime: 0
             });
             
-            console.log(`Added worker ${workerId}, total: ${this.workers.length}`);
             
         } catch (error) {
-            console.error('Failed to add worker:', error);
+            // Failed to add worker
         }
     }
     
@@ -480,7 +448,6 @@ class ParallelRenderer {
             if (!this.workers[i].busy) {
                 this.workers[i].worker.terminate();
                 this.workers.splice(i, 1);
-                console.log(`Removed worker ${i}, total: ${this.workers.length}`);
                 break;
             }
         }
@@ -497,6 +464,5 @@ class ParallelRenderer {
         this.workerQueue = [];
         this.activeRequests.clear();
         
-        console.log('Parallel Renderer cleaned up');
     }
 }

@@ -22,7 +22,7 @@ class FullscreenManager {
         
         // 全画面API使用（対応ブラウザ）
         if (this.viewer.pdfViewerContainer.requestFullscreen) {
-            this.viewer.pdfViewerContainer.requestFullscreen().catch(console.warn);
+            this.viewer.pdfViewerContainer.requestFullscreen().catch(() => {});
         } else if (this.viewer.pdfViewerContainer.webkitRequestFullscreen) {
             this.viewer.pdfViewerContainer.webkitRequestFullscreen();
         } else if (this.viewer.pdfViewerContainer.mozRequestFullScreen) {
@@ -48,7 +48,7 @@ class FullscreenManager {
         
         // 全画面API終了
         if (document.exitFullscreen) {
-            document.exitFullscreen().catch(console.warn);
+            document.exitFullscreen().catch(() => {});
         } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
         } else if (document.mozCancelFullScreen) {

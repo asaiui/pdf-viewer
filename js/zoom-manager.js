@@ -21,7 +21,6 @@ class ZoomManager {
         this.viewer.currentZoom = Math.min(this.viewer.currentZoom * step, 5.0);
         this.viewer.scale = this.viewer.baseScale * this.viewer.currentZoom;
         
-        console.log(`🔍 Zoom in: ${(this.viewer.currentZoom * 100).toFixed(0)}% (step: ${((step - 1) * 100).toFixed(0)}%)`);
         
         this.renderCurrentPage();
         this.updateZoomDisplay();
@@ -42,7 +41,6 @@ class ZoomManager {
         this.viewer.currentZoom = Math.max(this.viewer.currentZoom / step, 0.3);
         this.viewer.scale = this.viewer.baseScale * this.viewer.currentZoom;
         
-        console.log(`🔎 Zoom out: ${(this.viewer.currentZoom * 100).toFixed(0)}% (step: ${((step - 1) * 100).toFixed(0)}%)`);
         
         this.renderCurrentPage();
         this.updateZoomDisplay();
@@ -73,7 +71,6 @@ class ZoomManager {
         const startZoom = this.viewer.currentZoom;
         const startTime = performance.now();
         
-        console.log(`🎬 Animated zoom: ${(startZoom * 100).toFixed(0)}% → ${(targetZoom * 100).toFixed(0)}%`);
         
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime;
@@ -96,7 +93,6 @@ class ZoomManager {
                 requestAnimationFrame(animate);
             } else {
                 this.isAnimating = false;
-                console.log(`✅ Zoom animation completed at ${(this.viewer.currentZoom * 100).toFixed(0)}%`);
             }
         };
         
@@ -117,16 +113,13 @@ class ZoomManager {
                 // 幅フィット用のズーム個を計算
                 const widthZoom = containerWidth / actualCanvasWidth;
                 this.viewer.currentZoom = Math.max(0.3, Math.min(5.0, widthZoom * this.viewer.currentZoom));
-                console.log(`📏 Width fit: container=${containerWidth}px, canvas=${actualCanvasWidth}px, zoom=${this.viewer.currentZoom.toFixed(2)}`);
             } else {
                 // フォールバック: デフォルト値
                 this.viewer.currentZoom = 1.3;
-                console.warn('📏 Width fit fallback: using default zoom 1.3');
             }
         } else {
             // PDFがまだ読み込まれていない場合
             this.viewer.currentZoom = 1.3;
-            console.warn('📏 Width fit: PDF not loaded, using default zoom');
         }
         
         this.renderCurrentPage();
@@ -152,16 +145,13 @@ class ZoomManager {
                 const fitRatio = Math.min(widthRatio, heightRatio) * 0.95; // 5%のマージンを残す
                 
                 this.viewer.currentZoom = Math.max(0.3, Math.min(5.0, fitRatio * this.viewer.currentZoom));
-                console.log(`📱 Page fit: container=${containerWidth}x${containerHeight}, canvas=${canvasDisplayWidth}x${canvasDisplayHeight}, zoom=${this.viewer.currentZoom.toFixed(2)}`);
             } else {
                 // フォールバック: デフォルト値
                 this.viewer.currentZoom = 1.1;
-                console.warn('📱 Page fit fallback: using default zoom 1.1');
             }
         } else {
             // PDFがまだ読み込まれていない場合
             this.viewer.currentZoom = 1.1;
-            console.warn('📱 Page fit: PDF not loaded, using default zoom');
         }
         
         this.renderCurrentPage();
@@ -324,7 +314,6 @@ class ZoomManager {
                 e.preventDefault();
                 initialDistance = this.getTouchDistance(touches);
                 initialZoom = this.viewer.currentZoom;
-                console.log('🤏 Pinch zoom started:', { initialDistance, initialZoom });
             }
         }, { passive: false });
         
@@ -345,7 +334,6 @@ class ZoomManager {
         // タッチ終了
         this.viewer.canvas.addEventListener('touchend', (e) => {
             if (touches.length === 2) {
-                console.log('🤏 Pinch zoom ended at:', (this.viewer.currentZoom * 100).toFixed(0) + '%');
             }
             touches = [];
         });

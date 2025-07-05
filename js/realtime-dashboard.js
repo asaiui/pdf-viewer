@@ -34,7 +34,6 @@ class RealtimeDashboard {
         this.attachEventListeners();
         this.startMetricsCollection();
         
-        console.log('📊 Realtime Performance Dashboard initialized');
     }
     
     // ダッシュボードUI作成
@@ -555,6 +554,5 @@ class RealtimeDashboard {
             dashboard.remove();
         }
         
-        console.log('Realtime Dashboard cleaned up');
     }
 }

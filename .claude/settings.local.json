@@ -8,7 +8,11 @@
       "Bash(rg:*)",
       "Bash(grep:*)",
       "Bash(ls:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(python:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)"
     ],
     "deny": []
   }

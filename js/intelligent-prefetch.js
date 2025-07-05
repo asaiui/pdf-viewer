@@ -37,7 +37,6 @@ class IntelligentPrefetch {
         // 定期的な学習と予測
         this.startLearningCycle();
         
-        console.log('🧠 Intelligent Prefetch System initialized');
     }
     
     // ユーザー行動追跡開始
@@ -106,7 +105,6 @@ class IntelligentPrefetch {
             this.userBehavior.pageSequence.shift();
         }
         
-        console.log(`📊 Page ${pageNumber} viewed for ${duration}ms`);
     }
     
     // スクロール行動記録
@@ -130,7 +128,6 @@ class IntelligentPrefetch {
         
         this.userBehavior.zoomPreferences.set(this.viewer.currentPage, pageZooms);
         
-        console.log(`🔍 Zoom ${direction} on page ${this.viewer.currentPage} (${currentZoom.toFixed(2)}x)`);
     }
     
     // 読書速度計算
@@ -178,7 +175,6 @@ class IntelligentPrefetch {
             this.learningModel.train(data.features, data.nextPage);
         });
         
-        console.log(`🎓 Model trained with ${trainingData.length} samples`);
     }
     
     // 訓練データ生成
@@ -259,7 +255,6 @@ class IntelligentPrefetch {
         // セッションタイプの分類
         this.predictions.sessionType = this.classifySessionType();
         
-        console.log(`🔮 Predictions updated: ${this.predictions.nextPages.join(', ')}`);
     }
     
     // 現在ページの滞在時間取得
@@ -310,7 +305,6 @@ class IntelligentPrefetch {
     async executePrefetching() {
         if (this.predictions.nextPages.length === 0) return;
         
-        console.log('🚀 Executing intelligent prefetch...');
         
         // 予測されたページをプリロード
         for (const pageNumber of this.predictions.nextPages) {
@@ -329,10 +323,8 @@ class IntelligentPrefetch {
             if (this.viewer.progressiveLoader) {
                 await this.viewer.progressiveLoader.loadPageData(pageNumber);
                 this.prefetchCache.set(pageNumber, Date.now());
-                console.log(`✅ Prefetched page ${pageNumber}`);
             }
         } catch (error) {
-            console.warn(`Failed to prefetch page ${pageNumber}:`, error);
         }
     }
     
@@ -406,7 +398,6 @@ class IntelligentPrefetch {
             scrollActivity: this.userBehavior.scrollPatterns.length
         };
         
-        console.log('📈 Session Analysis:', sessionData);
         
         // 学習データとして保存（実装では localStorage など）
         this.saveSessionData(sessionData);
@@ -425,7 +416,6 @@ class IntelligentPrefetch {
             
             localStorage.setItem('pdfViewerSessions', JSON.stringify(existingData));
         } catch (error) {
-            console.warn('Failed to save session data:', error);
         }
     }
     
@@ -467,7 +457,6 @@ class IntelligentPrefetch {
     cleanup() {
         this.isLearning = false;
         this.prefetchCache.clear();
-        console.log('Intelligent Prefetch System cleaned up');
     }
 }
 

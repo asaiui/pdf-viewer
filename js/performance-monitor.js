@@ -32,7 +32,6 @@ class PerformanceMonitor {
         // 定期的なメトリクス収集
         this.startMonitoring();
         
-        console.log('Performance Monitor initialized');
     }
     
     // 監視開始
@@ -46,7 +45,6 @@ class PerformanceMonitor {
             this.collectMetrics();
         }, 5000);
         
-        console.log('Performance monitoring started');
     }
     
     // 監視停止
@@ -60,7 +58,6 @@ class PerformanceMonitor {
             this.monitoringInterval = null;
         }
         
-        console.log('Performance monitoring stopped');
     }
     
     // ページレンダリング時間の記録
@@ -96,7 +93,6 @@ class PerformanceMonitor {
             performance.mark(`page-${pageNumber}-render-${renderTime.toFixed(2)}ms`);
         }
         
-        console.log(`📊 Page ${pageNumber} render: ${renderTime.toFixed(2)}ms (avg: ${this.metrics.averageRenderTime.toFixed(2)}ms)`);
     }
     
     // メトリクス収集
@@ -182,13 +178,10 @@ class PerformanceMonitor {
         warnings.forEach(warning => {
             switch (warning.severity) {
                 case 'error':
-                    console.error(`⚠️ ${warning.message}`);
                     break;
                 case 'warning':
-                    console.warn(`⚠️ ${warning.message}`);
                     break;
                 case 'info':
-                    console.info(`ℹ️ ${warning.message}`);
                     break;
             }
         });
@@ -226,7 +219,6 @@ class PerformanceMonitor {
     
     // レンダリングパフォーマンス最適化
     optimizeRenderingPerformance() {
-        console.log('🔧 Optimizing rendering performance...');
         
         // Canvas解像度の動的調整
         if (this.viewer.canvas) {
@@ -234,14 +226,12 @@ class PerformanceMonitor {
             if (currentScale > 1.5) {
                 // 高DPI環境で解像度を下げる
                 this.viewer.canvas.style.imageRendering = 'optimizeSpeed';
-                console.log('Reduced canvas resolution for better performance');
             }
         }
     }
     
     // キャッシュ戦略最適化
     optimizeCacheStrategy() {
-        console.log('🔧 Optimizing cache strategy...');
         
         if (this.viewer.progressiveLoader) {
             // キャッシュサイズを増やす
@@ -249,7 +239,6 @@ class PerformanceMonitor {
                 this.viewer.progressiveLoader.maxCachedPages + 2,
                 15
             );
-            console.log(`Cache size increased to ${this.viewer.progressiveLoader.maxCachedPages} pages`);
         }
     }
     
@@ -260,12 +249,10 @@ class PerformanceMonitor {
         entries.forEach(entry => {
             if (entry.entryType === 'measure' && entry.name.includes('page-render')) {
                 // カスタム測定の処理
-                console.log(`Custom measure: ${entry.name} - ${entry.duration.toFixed(2)}ms`);
             }
             
             if (entry.entryType === 'resource' && entry.name.includes('.pdf')) {
                 // PDF リソース読み込み時間
-                console.log(`PDF resource load: ${entry.duration.toFixed(2)}ms`);
             }
         });
     }
@@ -401,6 +388,5 @@ class PerformanceMonitor {
             this.performanceObserver.disconnect();
         }
         
-        console.log('Performance Monitor cleaned up');
     }
 }

@@ -54,7 +54,7 @@ body {
 .header {
     background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
     color: white;
-    padding: 5px 20px;
+    padding: 1px 20px;
     box-shadow: var(--shadow);
     position: relative;
     z-index: 100;
@@ -930,7 +930,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    background-color: #f5f5f5;
+    background-color: transparent;
     position: relative;
     transition: opacity 0.3s ease-in-out;
 }
@@ -943,8 +943,8 @@ body {
     display: block;
     margin: 0 auto;
     background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
     transition: transform 0.2s ease;
 }
 
@@ -966,19 +966,23 @@ body {
 
 /* SVG読み込み中のスタイル */
 .svg-container.loading {
-    background: linear-gradient(45deg, 
-        transparent 33%, 
-        rgba(var(--primary-500), 0.1) 33%, 
-        rgba(var(--primary-500), 0.1) 66%, 
-        transparent 66%
-    );
+    background: linear-gradient(45deg,
+            transparent 33%,
+            rgba(var(--primary-500), 0.1) 33%,
+            rgba(var(--primary-500), 0.1) 66%,
+            transparent 66%);
     background-size: 20px 20px;
     animation: loading-animation 1s linear infinite;
 }
 
 @keyframes loading-animation {
-    0% { background-position: 0 0; }
-    100% { background-position: 20px 20px; }
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 20px 20px;
+    }
 }
 
 /* SVGエラー表示 */
@@ -1016,20 +1020,9 @@ body {
     .svg-container {
         padding: 10px;
     }
-    
+
     .svg-container svg {
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-}
-
-/* ダークモード対応（将来のため） */
-@media (prefers-color-scheme: dark) {
-    .svg-container {
-        background-color: #1a1a1a;
-    }
-    
-    .svg-container svg {
-        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
     }
 }

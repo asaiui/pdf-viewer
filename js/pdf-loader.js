@@ -88,7 +88,6 @@ class PDFLoader {
             return true;
 
         } catch (error) {
-            console.error('PDF読み込みエラー:', error);
             
             let errorMessage = 'PDFの読み込みに失敗しました。';
             if (error.message.includes('タイムアウト')) {
@@ -110,24 +109,20 @@ class PDFLoader {
             const response = await fetch(url, { method: 'HEAD' });
             return response.ok;
         } catch (error) {
-            console.warn(`ファイル存在確認エラー: ${url}`, error);
             return false;
         }
     }
 
     async renderPage(pageNumber = this.viewer.currentPage, forceRender = false) {
-        console.log('🔧 PDFLoader.renderPage called - pageNumber:', pageNumber, 'PDFLoader.pdf:', !!this.pdf, 'viewer.pdf:', !!this.viewer.pdf, 'totalPages:', this.viewer.totalPages);
         
         // PDFLoaderのPDFインスタンスがない場合は、viewerから取得
         const pdf = this.pdf || this.viewer.pdf;
         if (!pdf) {
-            console.warn('PDF not loaded in PDFLoader');
             return;
         }
 
         // ページ番号の妥当性チェック
         if (pageNumber < 1 || pageNumber > this.viewer.totalPages) {
-            console.warn(`Invalid page number: ${pageNumber}`);
             return;
         }
 
@@ -141,13 +136,11 @@ class PDFLoader {
 
         // 既に同じページをレンダリング中の場合はスキップ
         if (!forceRender && this.isRendering && this.currentRenderTask && this.currentRenderTask.pageNumber === pageNumber) {
-            console.log(`Page ${pageNumber} is already being rendered, skipping`);
             return;
         }
 
         // 進行中のレンダリングをキャンセル
         if (this.currentRenderTask) {
-            console.log(`Cancelling previous render task for page ${this.currentRenderTask.pageNumber}`);
             this.currentRenderTask.cancel();
         }
 
@@ -185,11 +178,9 @@ class PDFLoader {
                         'normal'
                     );
                     
-                    console.log(`並列レンダリング完了: ${result.renderTime.toFixed(2)}ms (Worker ${result.workerId})`);
                     return;
                     
                 } catch (error) {
-                    console.warn('並列レンダリング失敗、通常レンダリングにフォールバック:', error);
                 }
             }
 
@@ -225,9 +216,7 @@ class PDFLoader {
                         renderTask.cancel();
                         this.currentRenderTask.cancelled = true;
                         this.isRendering = false;
-                        console.log(`Render task for page ${pageNumber} cancelled`);
                     } catch (error) {
-                        console.warn('Error cancelling render task:', error);
                     }
                 }
             };
@@ -236,7 +225,6 @@ class PDFLoader {
 
             // キャンセルされていた場合は処理を中断
             if (this.currentRenderTask && this.currentRenderTask.cancelled) {
-                console.log(`Render task for page ${pageNumber} was cancelled, aborting`);
                 return;
             }
 
@@ -247,7 +235,6 @@ class PDFLoader {
             if (pageNumber === this.viewer.currentPage) {
                 this.viewer.updateActiveTocItem();
                 const renderTime = performance.now() - startTime;
-                console.log(`ページ ${pageNumber} オフスクリーンレンダリング時間: ${renderTime.toFixed(2)}ms`);
                 
                 // パフォーマンス監視にレンダリング時間を記録
                 if (this.viewer.performanceMonitor) {
@@ -257,9 +244,7 @@ class PDFLoader {
 
         } catch (error) {
             if (error.name === 'RenderingCancelledException') {
-                console.log(`ページ ${pageNumber} のレンダリングがキャンセルされました`);
             } else {
-                console.error('ページ描画エラー:', error);
                 this.viewer.showDemoContent();
             }
         } finally {
@@ -297,16 +282,13 @@ class PDFLoader {
                 );
                 
                 await Promise.race([pagePromise, timeoutPromise]);
-                console.log(`ページ ${pageNum} をプリロードしました`);
             } catch (error) {
-                console.warn(`ページ ${pageNum} のプリロードに失敗:`, error);
             }
         });
     }
 
     // キャッシュされたページのレンダリング
     async renderCachedPage(cachedPageData, pageNumber) {
-        console.log(`🚀 Rendering cached page ${pageNumber}`, cachedPageData);
         
         const startTime = performance.now();
         
@@ -363,14 +345,11 @@ class PDFLoader {
             if (pageNumber === this.viewer.currentPage) {
                 this.viewer.updateActiveTocItem();
                 const renderTime = performance.now() - startTime;
-                console.log(`キャッシュページ ${pageNumber} レンダリング時間: ${renderTime.toFixed(2)}ms`);
             }
 
         } catch (error) {
             if (error.name === 'RenderingCancelledException') {
-                console.log(`キャッシュページ ${pageNumber} のレンダリングがキャンセルされました`);
             } else {
-                console.error('キャッシュページ描画エラー:', error);
                 // キャッシュに問題がある場合は通常のレンダリングにフォールバック
                 return this.renderPage(pageNumber, true);
             }
@@ -427,7 +406,6 @@ class PDFLoader {
         const tempCanvases = document.querySelectorAll('canvas[data-temp="true"]');
         tempCanvases.forEach(canvas => canvas.remove());
         
-        console.log('Manual memory cleanup performed');
     }
 
     // オフスクリーンキャンバスからメインキャンバスへの転送
@@ -485,8 +463,7 @@ class PDFLoader {
                 limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024)
             };
             
-            console.log(`Memory usage: ${stats.used}MB / ${stats.limit}MB (${((stats.used / stats.limit) * 100).toFixed(1)}%)`);
-            return stats;
+                return stats;
         }
         return null;
     }

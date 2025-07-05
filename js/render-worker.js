@@ -16,7 +16,6 @@ class PDFRenderWorker {
             cacheHits: 0
         };
         
-        console.log('PDF Render Worker initialized');
     }
     
     // ページレンダリングの実行
@@ -90,7 +89,6 @@ class PDFRenderWorker {
         const canvasWidth = Math.max(1, Math.floor(viewport.width * scale));
         const canvasHeight = Math.max(1, Math.floor(viewport.height * scale));
         
-        console.log(`Worker: Creating canvas ${canvasWidth}x${canvasHeight} for page ${pageNumber}`);
         
         // OffscreenCanvas を使用
         const canvas = new OffscreenCanvas(canvasWidth, canvasHeight);
@@ -138,7 +136,6 @@ class PDFRenderWorker {
             try {
                 await this.renderPage(pageData);
             } catch (error) {
-                console.error(`Batch render error for page ${pageData.pageNumber}:`, error);
             }
         }
         
@@ -195,7 +192,6 @@ class PDFRenderWorker {
             this.cleanupCache();
         }
         
-        console.log(`Worker quality updated: ${qualitySettings.name} (cache: ${this.maxCacheSize})`);
     }
 
     // 統計情報の取得
@@ -257,6 +253,5 @@ self.addEventListener('message', async (event) => {
             break;
             
         default:
-            console.warn('Unknown message type:', type);
     }
 });

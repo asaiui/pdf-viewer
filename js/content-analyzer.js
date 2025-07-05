@@ -10,7 +10,6 @@ class ContentAnalyzer {
     async analyzePDFContent(pdf) {
         if (!pdf) return;
 
-        console.log('PDFの内容を分析中...');
         const pageAnalysis = [];
 
         try {
@@ -39,10 +38,8 @@ class ContentAnalyzer {
                     const analysis = this.analyzePageContent(pageNum, text);
                     pageAnalysis.push(analysis);
                     
-                    console.log(`ページ ${pageNum}:`, analysis);
                     
                 } catch (error) {
-                    console.warn(`ページ ${pageNum} の分析に失敗:`, error);
                     // エラーが発生してもデフォルト分析結果を追加
                     pageAnalysis.push({
                         pageNumber: pageNum,
@@ -55,13 +52,11 @@ class ContentAnalyzer {
             }
 
             // 分析結果をログ出力
-            console.log('PDF分析結果:', pageAnalysis);
             
             // 実際の構成に基づいて目次を動的に更新
             this.updateTableOfContents(pageAnalysis);
 
         } catch (error) {
-            console.error('PDF内容分析エラー:', error);
         }
     }
 
@@ -147,7 +142,6 @@ class ContentAnalyzer {
 
     // 分析結果に基づいて目次を動的に更新
     updateTableOfContents(pageAnalysis) {
-        console.log('目次を動的に更新中...');
         
         // 分析結果をタイプ別にグループ化
         const groupedPages = {
@@ -246,6 +240,5 @@ class ContentAnalyzer {
             }
         });
 
-        console.log('目次の更新が完了しました');
     }
 }

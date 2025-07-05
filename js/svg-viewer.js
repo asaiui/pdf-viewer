@@ -12,7 +12,6 @@ class SVGViewer {
         this.preloadQueue = [];
         this.isLoading = false;
         
-        console.log('🎨 SVGViewer initialized');
         this.initializeSVGContainer();
     }
 
@@ -20,34 +19,13 @@ class SVGViewer {
      * SVG表示用コンテナの初期化
      */
     initializeSVGContainer() {
-        // 既存のPDFキャンバスを非表示
-        if (this.viewer.canvas) {
-            this.viewer.canvas.style.display = 'none';
-        }
-
-        // SVG表示用のコンテナを作成
-        this.svgContainer = document.createElement('div');
-        this.svgContainer.id = 'svgContainer';
-        this.svgContainer.className = 'svg-container';
+        // 既存のsvgContainerを使用
+        this.svgContainer = this.viewer.svgContainer;
         
-        // コンテナのスタイル設定
-        this.svgContainer.style.cssText = `
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            background-color: #f5f5f5;
-        `;
-
-        // PDFビューアコンテナに追加
-        const pdfContainer = this.viewer.pdfViewerContainer;
-        if (pdfContainer) {
-            pdfContainer.appendChild(this.svgContainer);
+        if (!this.svgContainer) {
+            return;
         }
 
-        console.log('✅ SVG container initialized');
     }
 
     /**
@@ -55,12 +33,10 @@ class SVGViewer {
      */
     async loadSVGPage(pageNumber) {
         if (this.isLoading) {
-            console.log('🔄 Already loading, skipping...');
             return;
         }
 
         this.isLoading = true;
-        console.log(`📄 Loading SVG page ${pageNumber}`);
 
         try {
             // プログレス表示
@@ -69,9 +45,9 @@ class SVGViewer {
             // キャッシュから確認
             const cacheKey = `page-${pageNumber}`;
             if (this.svgCache.has(cacheKey)) {
-                console.log(`💾 Cache hit for page ${pageNumber}`);
                 this.displaySVG(this.svgCache.get(cacheKey));
                 this.viewer.updateProgress(100, `✅ ページ ${pageNumber} 表示完了`);
+                this.isLoading = false;
                 return;
             }
 
@@ -98,7 +74,6 @@ class SVGViewer {
             this.schedulePreload(pageNumber);
 
         } catch (error) {
-            console.error(`❌ Failed to load SVG page ${pageNumber}:`, error);
             this.viewer.updateProgress(0, `⚠️ ページ ${pageNumber} の読み込みに失敗`);
             this.showErrorPage(pageNumber, error);
         } finally {
@@ -119,7 +94,6 @@ class SVGViewer {
      * SVGファイルの非同期取得
      */
     async fetchSVG(svgPath) {
-        console.log(`🌐 Fetching SVG: ${svgPath}`);
         
         const response = await fetch(svgPath);
         if (!response.ok) {
@@ -130,7 +104,6 @@ class SVGViewer {
         
         // ファイルサイズをログ出力
         const fileSizeMB = (svgText.length / 1024 / 1024).toFixed(2);
-        console.log(`📦 SVG loaded: ${fileSizeMB}MB`);
         
         return svgText;
     }
@@ -187,13 +160,18 @@ class SVGViewer {
         svgElement.style.shapeRendering = 'geometricPrecision';
         svgElement.style.textRendering = 'optimizeLegibility';
 
-        console.log(`⚡ SVG optimized for page ${pageNumber}`);
     }
 
     /**
      * SVGの表示
      */
     displaySVG(svgElement) {
+        // ローディング表示を隠してSVGコンテナを表示
+        if (this.viewer.loadingIndicator) {
+            this.viewer.loadingIndicator.style.display = 'none';
+        }
+        this.svgContainer.style.display = 'flex';
+
         // 既存のSVGをクリア
         this.svgContainer.innerHTML = '';
 
@@ -210,7 +188,6 @@ class SVGViewer {
             this.svgContainer.style.opacity = '1';
         });
 
-        console.log('✨ SVG displayed successfully');
     }
 
     /**
@@ -221,11 +198,9 @@ class SVGViewer {
         if (this.svgCache.size >= this.maxCacheSize) {
             const firstKey = this.svgCache.keys().next().value;
             this.svgCache.delete(firstKey);
-            console.log(`🗑️ Cache evicted: ${firstKey}`);
         }
 
         this.svgCache.set(key, svgElement);
-        console.log(`💾 Cached SVG: ${key} (${this.svgCache.size}/${this.maxCacheSize})`);
     }
 
     /**
@@ -257,7 +232,6 @@ class SVGViewer {
         if (this.preloadQueue.length === 0 || this.isLoading) return;
 
         const pageToPreload = this.preloadQueue.shift();
-        console.log(`🔄 Preloading page ${pageToPreload}`);
 
         try {
             const svgPath = this.getSVGPath(pageToPreload);
@@ -267,9 +241,7 @@ class SVGViewer {
             const cacheKey = `page-${pageToPreload}`;
             this.cacheSVG(cacheKey, svgElement);
             
-            console.log(`✅ Preloaded page ${pageToPreload}`);
         } catch (error) {
-            console.warn(`⚠️ Preload failed for page ${pageToPreload}:`, error);
         }
 
         // 次のプリロードを遅延実行
@@ -311,7 +283,6 @@ class SVGViewer {
             this.svgContainer.style.transform = `scale(${scale})`;
             this.svgContainer.style.transformOrigin = 'center center';
             
-            console.log(`🔍 SVG zoom set to ${(scale * 100).toFixed(0)}%`);
         }
     }
 
@@ -328,6 +299,5 @@ class SVGViewer {
             this.svgContainer.remove();
         }
 
-        console.log('🧹 SVGViewer destroyed');
     }
 }

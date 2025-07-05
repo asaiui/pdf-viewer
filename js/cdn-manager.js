@@ -70,7 +70,6 @@ class CDNManager {
     
     // CDN マネージャーの初期化
     async initializeCDNManager() {
-        console.log('🌐 Initializing CDN Manager...');
         
         // 初期CDN選択
         await this.selectOptimalCDN();
@@ -81,12 +80,10 @@ class CDNManager {
         // ネットワーク状態監視
         this.setupNetworkMonitoring();
         
-        console.log(`✅ CDN Manager initialized with ${this.currentCDN?.name || 'default'} CDN`);
     }
     
     // 最適CDNの選択
     async selectOptimalCDN() {
-        console.log('🔍 Selecting optimal CDN...');
         
         const cdnPerformance = await this.performSpeedTests();
         
@@ -100,14 +97,12 @@ class CDNManager {
         
         this.currentCDN = sortedCDNs[0];
         
-        console.log(`🎯 Selected CDN: ${this.currentCDN.name} (score: ${this.currentCDN.score.toFixed(2)})`);
         
         return this.currentCDN;
     }
     
     // CDNスピードテスト
     async performSpeedTests() {
-        console.log('⚡ Performing CDN speed tests...');
         
         const results = new Map();
         const testPromises = this.cdnSources.pdfjs.map(cdn => 
@@ -122,7 +117,6 @@ class CDNManager {
                 results.set(cdn.name, result.value);
                 this.speedTestResults.set(cdn.name, result.value);
             } else {
-                console.warn(`CDN ${cdn.name} speed test failed:`, result.reason);
                 results.set(cdn.name, { speed: Infinity, success: false });
             }
         });
@@ -155,7 +149,6 @@ class CDNManager {
             };
             
         } catch (error) {
-            console.warn(`CDN ${cdn.name} test failed:`, error);
             return {
                 speed: Infinity,
                 success: false,
@@ -189,13 +182,11 @@ class CDNManager {
     // リソースURLの取得
     getResourceUrl(type) {
         if (!this.currentCDN) {
-            console.warn('No CDN selected, using fallback');
             return this.getFallbackUrl(type);
         }
         
         const file = this.currentCDN.files[type];
         if (!file) {
-            console.warn(`Unknown resource type: ${type}`);
             return null;
         }
         
@@ -248,7 +239,6 @@ class CDNManager {
                 const response = await this.fetchWithTimeout(url, options);
                 
                 if (response.ok) {
-                    console.log(`✅ Fallback successful with ${cdn.name} CDN`);
                     this.stats.successfulRequests++;
                     this.updateCDNReliability(cdn.name, true);
                     
@@ -296,7 +286,6 @@ class CDNManager {
             return;
         }
         
-        console.log(`🔄 Switching CDN from ${this.currentCDN?.name || 'none'} to ${newCDN.name}`);
         
         this.currentCDN = newCDN;
         this.stats.cdnSwitches++;
@@ -312,7 +301,6 @@ class CDNManager {
     
     // CDN障害処理
     handleCDNFailure(cdnName, error) {
-        console.warn(`❌ CDN ${cdnName} failed:`, error.message);
         
         // 失敗履歴を更新
         const failures = this.failureHistory.get(cdnName) || 0;
@@ -323,7 +311,6 @@ class CDNManager {
         
         // 連続失敗が多い場合は自動最適化
         if (failures >= 3) {
-            console.log(`🔧 Auto-optimizing due to repeated failures from ${cdnName}`);
             this.autoOptimizeCDN();
         }
     }
@@ -351,7 +338,6 @@ class CDNManager {
         
         this.lastOptimization = now;
         
-        console.log('🚀 Performing automatic CDN optimization...');
         
         await this.selectOptimalCDN();
     }
@@ -363,7 +349,6 @@ class CDNManager {
             this.performHealthCheck();
         }, 10 * 60 * 1000);
         
-        console.log('💓 CDN health checks started');
     }
     
     // ヘルスチェック実行
@@ -374,14 +359,11 @@ class CDNManager {
             const health = await this.testCDNSpeed(this.currentCDN);
             
             if (!health.success) {
-                console.warn(`⚠️ Current CDN ${this.currentCDN.name} health check failed`);
                 await this.autoOptimizeCDN();
             } else {
-                console.log(`✅ CDN ${this.currentCDN.name} health check passed (${health.speed.toFixed(2)}ms)`);
             }
             
         } catch (error) {
-            console.error('Health check error:', error);
         }
     }
     
@@ -395,19 +377,16 @@ class CDNManager {
         
         // オンライン/オフライン監視
         window.addEventListener('online', () => {
-            console.log('🌐 Network back online, optimizing CDN...');
             this.autoOptimizeCDN();
         });
         
         window.addEventListener('offline', () => {
-            console.log('📴 Network offline detected');
         });
     }
     
     // ネットワーク変更処理
     handleNetworkChange() {
         const connection = navigator.connection;
-        console.log(`📶 Network changed: ${connection.effectiveType} (${connection.downlink}Mbps)`);
         
         // 低速ネットワークの場合は最適化
         if (connection.downlink < 1.0) {
@@ -452,6 +431,5 @@ class CDNManager {
             clearInterval(this.healthCheckInterval);
         }
         
-        console.log('CDN Manager cleaned up');
     }
 }

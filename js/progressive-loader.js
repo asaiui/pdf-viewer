@@ -29,7 +29,6 @@ class ProgressiveLoader {
         // メモリ使用量の監視
         this.setupMemoryMonitoring();
         
-        console.log('Progressive Loader initialized');
     }
     
     // ビューポート監視の設定
@@ -54,7 +53,6 @@ class ProgressiveLoader {
     
     // PDFの段階的読み込み開始
     async loadPDFProgressive(pdf) {
-        console.log('Starting progressive PDF loading...');
         this.pdf = pdf;
         this.totalPages = pdf.numPages;
         
@@ -82,7 +80,6 @@ class ProgressiveLoader {
             ...this.getPageRange(currentPage - 5, currentPage + 5)
         ];
         
-        console.log('Loading priority pages:', priorityPages);
         
         for (const pageNum of priorityPages) {
             if (pageNum <= this.totalPages) {
@@ -105,7 +102,6 @@ class ProgressiveLoader {
         const startTime = performance.now();
         
         try {
-            console.log(`Loading page ${pageNumber} (${isPriority ? 'priority' : 'normal'})`);
             
             const page = await this.pdf.getPage(pageNumber);
             
@@ -130,12 +126,10 @@ class ProgressiveLoader {
             this.stats.totalLoadTime += loadTime;
             this.stats.pagesLoaded++;
             
-            console.log(`Page ${pageNumber} loaded in ${loadTime.toFixed(2)}ms`);
             
             return pageData;
             
         } catch (error) {
-            console.error(`Failed to load page ${pageNumber}:`, error);
             throw error;
         } finally {
             this.loadingQueue.delete(pageNumber);
@@ -181,7 +175,6 @@ class ProgressiveLoader {
     }
     
     async startBackgroundPreload() {
-        console.log('Starting background preload...');
         
         for (let pageNum = 1; pageNum <= this.totalPages; pageNum++) {
             if (!this.loadedPages.has(pageNum) && !this.priorityPages.has(pageNum)) {
@@ -195,7 +188,6 @@ class ProgressiveLoader {
     
     // 拡張プリロード（現在ページ周辺を重点的に）
     async startExpandedPreload() {
-        console.log('Starting expanded preload...');
         const currentPage = this.viewer.currentPage;
         const expandedRange = 15; // 前後15ページ
         
@@ -268,12 +260,10 @@ class ProgressiveLoader {
                 await new Promise(resolve => setTimeout(resolve, 50));
                 
             } catch (error) {
-                console.warn(`Preload failed for page ${item.page}:`, error);
             }
             
             // メモリ使用量チェック
             if (this.isMemoryLimitReached()) {
-                console.log('Memory limit reached, pausing preload');
                 break;
             }
         }
@@ -286,7 +276,6 @@ class ProgressiveLoader {
                 while (deadline.timeRemaining() > 10 && this.preloadQueue.length > 0) {
                     const item = this.preloadQueue.shift();
                     this.loadPageData(item.page).catch(error => {
-                        console.warn(`Idle preload failed for page ${item.page}:`, error);
                     });
                 }
                 
@@ -327,7 +316,6 @@ class ProgressiveLoader {
         
         for (const [pageNum] of pagesToRemove) {
             this.loadedPages.delete(pageNum);
-            console.log(`Removed page ${pageNum} from cache (LRU)`);
         }
     }
     
@@ -338,7 +326,6 @@ class ProgressiveLoader {
             const usedMB = memory.usedJSHeapSize / 1024 / 1024;
             const limitMB = memory.jsHeapSizeLimit / 1024 / 1024;
             
-            console.log(`Memory usage: ${usedMB.toFixed(1)}MB / ${limitMB.toFixed(1)}MB`);
             
             // メモリ使用量が80%を超えた場合
             if (usedMB / limitMB > 0.8) {
@@ -358,7 +345,6 @@ class ProgressiveLoader {
     
     // 積極的なクリーンアップ
     aggressiveCleanup() {
-        console.log('Performing aggressive memory cleanup...');
         
         // 優先ページ以外をすべて削除
         const priorityData = new Map();
@@ -379,7 +365,6 @@ class ProgressiveLoader {
             window.gc();
         }
         
-        console.log('Aggressive cleanup completed');
     }
     
     // ビューポート変更ハンドラ
@@ -442,10 +427,8 @@ class ProgressiveLoader {
     // キャッシュされたページの取得
     getCachedPage(pageNumber) {
         if (this.loadedPages.has(pageNumber)) {
-            console.log(`📋 Found cached page ${pageNumber}`);
-            return this.loadedPages.get(pageNumber);
+                return this.loadedPages.get(pageNumber);
         }
-        console.log(`❌ Page ${pageNumber} not found in cache`);
         return null;
     }
 
@@ -484,7 +467,6 @@ class ProgressiveLoader {
             this.aggressiveCleanup();
         }
         
-        console.log(`Progressive Loader updated for ${qualitySettings.name}: max cache = ${this.maxCachedPages}`);
     }
     
     // クリーンアップ
@@ -497,6 +479,5 @@ class ProgressiveLoader {
         this.preloadQueue = [];
         this.priorityPages.clear();
         
-        console.log('Progressive Loader cleaned up');
     }
 }

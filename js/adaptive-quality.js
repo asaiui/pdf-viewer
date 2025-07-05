@@ -81,7 +81,6 @@ class AdaptiveQualityManager {
     
     // 適応品質システム初期化
     initializeAdaptiveQuality() {
-        console.log('🎯 Initializing Adaptive Quality Manager...');
         
         // 初期品質設定
         this.detectOptimalQuality();
@@ -95,12 +94,10 @@ class AdaptiveQualityManager {
         // UIコントロール作成
         this.createQualityUI();
         
-        console.log(`✅ Adaptive Quality Manager initialized with ${this.currentQuality} quality`);
     }
     
     // 最適品質自動検出
     async detectOptimalQuality() {
-        console.log('🔍 Detecting optimal quality settings...');
         
         const deviceCapabilities = this.analyzeDeviceCapabilities();
         const networkCapabilities = await this.networkMonitor.getNetworkCapabilities();
@@ -126,7 +123,6 @@ class AdaptiveQualityManager {
             this.currentQuality = 'minimal';
         }
         
-        console.log(`🎯 Optimal quality detected: ${this.currentQuality} (score: ${totalScore.toFixed(1)})`);
         this.applyQualitySettings();
     }
     
@@ -141,7 +137,6 @@ class AdaptiveQualityManager {
             serviceWorkerSupport: 'serviceWorker' in navigator
         };
         
-        console.log('💻 Device capabilities:', capabilities);
         return capabilities;
     }
     
@@ -229,7 +224,6 @@ class AdaptiveQualityManager {
         const recommendation = this.analyzePerformanceAndRecommend(metrics);
         
         if (recommendation && recommendation !== this.currentQuality) {
-            console.log(`🔧 Auto-adjusting quality: ${this.currentQuality} → ${recommendation}`);
             this.adjustQuality(recommendation, 'auto');
         }
     }
@@ -316,7 +310,6 @@ class AdaptiveQualityManager {
     // 品質調整
     adjustQuality(newQuality, reason = 'manual') {
         if (!this.qualityLevels[newQuality]) {
-            console.warn(`Unknown quality level: ${newQuality}`);
             return;
         }
         
@@ -346,7 +339,6 @@ class AdaptiveQualityManager {
         // イベント発行
         this.dispatchQualityChangeEvent(oldQuality, newQuality, reason);
         
-        console.log(`🎯 Quality adjusted to ${newQuality} (${reason})`);
     }
     
     // 品質設定適用
@@ -369,10 +361,9 @@ class AdaptiveQualityManager {
                 this.viewer.progressiveLoader.updateQualitySettings(settings);
             }
             
-            console.log(`✅ Quality settings applied: ${settings.name}`);
             
         } catch (error) {
-            console.warn('Error applying quality settings:', error);
+            // Error applying quality settings
         }
     }
     
@@ -442,7 +433,6 @@ class AdaptiveQualityManager {
         this.autoAdjustment = !this.autoAdjustment;
         this.updateQualityUI();
         
-        console.log(`🔄 Auto quality adjustment: ${this.autoAdjustment ? 'enabled' : 'disabled'}`);
         
         if (this.autoAdjustment) {
             // 自動調整有効化時は即座にチェック
@@ -485,7 +475,6 @@ class AdaptiveQualityManager {
             qualityControls.remove();
         }
         
-        console.log('Adaptive Quality Manager cleaned up');
     }
 }
 
@@ -521,7 +510,6 @@ class NetworkMonitor {
             this.performSpeedTest();
         }, 60000); // 1分ごと
         
-        console.log('📡 Network monitoring started');
     }
     
     // ネットワーク情報更新
@@ -535,7 +523,6 @@ class NetworkMonitor {
                 saveData: conn.saveData || false
             };
             
-            console.log('📶 Network info updated:', this.currentInfo);
         }
     }
     
@@ -565,7 +552,7 @@ class NetworkMonitor {
             }
             
         } catch (error) {
-            console.warn('Network speed test failed:', error);
+            // Network speed test failed
         }
     }
     
@@ -598,6 +585,5 @@ class NetworkMonitor {
         if (this.monitoringInterval) {
             clearInterval(this.monitoringInterval);
         }
-        console.log('Network Monitor cleaned up');
     }
 }
