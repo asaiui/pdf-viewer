@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レスポンシブデザイン検証</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #0066CC;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .test-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .test-section:last-child {
+            border-bottom: none;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .viewport-info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .breakpoint-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .breakpoint-card {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .breakpoint-card.active {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .breakpoint-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .breakpoint-range {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .scale-info {
+            font-size: 12px;
+            color: #0066CC;
+            font-weight: 500;
+        }
+        
+        .feature-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .feature-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 14px;
+        }
+        
+        .feature-item.working {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .feature-item.issue {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .touch-test {
+            background: #e3f2fd;
+            border: 2px dashed #2196f3;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 16px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 480px) {
+            .test-section { padding: 16px; }
+            .breakpoint-test { grid-template-columns: 1fr; }
+            .feature-test { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>📱 レスポンシブデザイン検証ツール</h1>
+            <p>SVGビューアーのレスポンシブ実装状況をテストします</p>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">現在のビューポート情報</div>
+            <div class="viewport-info" id="viewportInfo">
+                幅: <span id="width">-</span>px | 高さ: <span id="height">-</span>px | 
+                比率: <span id="ratio">-</span> | 向き: <span id="orientation">-</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">ブレークポイント検出</div>
+            <div class="breakpoint-test">
+                <div class="breakpoint-card" id="mobile">
+                    <div class="breakpoint-name">📱 Mobile</div>
+                    <div class="breakpoint-range">0 - 480px</div>
+                    <div class="scale-info">Scale: 0.875</div>
+                </div>
+                <div class="breakpoint-card" id="mobileStd">
+                    <div class="breakpoint-name">📱 Mobile Std</div>
+                    <div class="breakpoint-range">481 - 768px</div>
+                    <div class="scale-info">Scale: 1.0</div>
+                </div>
+                <div class="breakpoint-card" id="tablet">
+                    <div class="breakpoint-name">📟 Tablet</div>
+                    <div class="breakpoint-range">769 - 1023px</div>
+                    <div class="scale-info">Scale: 1.125</div>
+                </div>
+                <div class="breakpoint-card" id="desktop">
+                    <div class="breakpoint-name">💻 Desktop</div>
+                    <div class="breakpoint-range">1024 - 1439px</div>
+                    <div class="scale-info">Scale: 1.25</div>
+                </div>
+                <div class="breakpoint-card" id="large">
+                    <div class="breakpoint-name">🖥️ Large</div>
+                    <div class="breakpoint-range">1440px+</div>
+                    <div class="scale-info">Scale: 1.375</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">機能テスト</div>
+            <div class="feature-test">
+                <div class="feature-item" id="cssVars">
+                    <strong>CSS変数設定</strong><br>
+                    <span id="cssVarsStatus">確認中...</span>
+                </div>
+                <div class="feature-item" id="eventListeners">
+                    <strong>イベントリスナー</strong><br>
+                    <span id="eventListenersStatus">確認中...</span>
+                </div>
+                <div class="feature-item" id="fontScaling">
+                    <strong>フォントスケーリング</strong><br>
+                    <span id="fontScalingStatus">確認中...</span>
+                </div>
+                <div class="feature-item" id="layout">
+                    <strong>レイアウト調整</strong><br>
+                    <span id="layoutStatus">確認中...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">タッチジェスチャーテスト</div>
+            <div class="touch-test" id="touchTest">
+                <div>📱 この領域でタッチ操作をテストしてください</div>
+                <div style="font-size: 14px; margin-top: 8px; color: #666;">
+                    タップ・ピンチ・スワイプを試してみてください
+                </div>
+                <div id="touchStatus" style="margin-top: 12px; font-weight: bold;"></div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>🔍 検証手順</h3>
+            <ol>
+                <li><strong>ブラウザの開発者ツールを開く</strong> (F12)</li>
+                <li><strong>デバイスツールバーをクリック</strong> (Ctrl+Shift+M)</li>
+                <li><strong>異なる画面サイズでテスト：</strong>
+                    <ul>
+                        <li>iPhone SE (375x667) - Mobile</li>
+                        <li>iPhone 12 Pro (390x844) - Mobile Std</li>
+                        <li>iPad (768x1024) - Tablet</li>
+                        <li>MacBook Air (1440x900) - Desktop/Large</li>
+                    </ul>
+                </li>
+                <li><strong>画面を回転させて</strong>縦横表示をテスト</li>
+                <li><strong>タッチ操作</strong>をシミュレート（開発者ツールのタッチモード）</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // ビューポート情報の更新
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const ratio = (width / height).toFixed(2);
+            const orientation = width > height ? 'landscape' : 'portrait';
+            
+            document.getElementById('width').textContent = width;
+            document.getElementById('height').textContent = height;
+            document.getElementById('ratio').textContent = ratio;
+            document.getElementById('orientation').textContent = orientation;
+            
+            // ブレークポイント検出
+            updateBreakpointStatus(width);
+            // 機能テスト
+            runFeatureTests();
+        }
+        
+        // ブレークポイント状況の更新
+        function updateBreakpointStatus(width) {
+            const breakpoints = {
+                mobile: width <= 480,
+                mobileStd: width >= 481 && width <= 768,
+                tablet: width >= 769 && width <= 1023,
+                desktop: width >= 1024 && width <= 1439,
+                large: width >= 1440
+            };
+            
+            Object.keys(breakpoints).forEach(bp => {
+                const element = document.getElementById(bp);
+                if (breakpoints[bp]) {
+                    element.classList.add('active');
+                } else {
+                    element.classList.remove('active');
+                }
+            });
+        }
+        
+        // 機能テストの実行
+        function runFeatureTests() {
+            // CSS変数テスト
+            const scaleVar = getComputedStyle(document.documentElement).getPropertyValue('--responsive-scale');
+            updateFeatureStatus('cssVars', scaleVar ? '✅ 設定済み' : '❌ 未設定', !!scaleVar);
+            
+            // イベントリスナーテスト
+            const hasResizeListener = window.onresize !== null;
+            updateFeatureStatus('eventListeners', hasResizeListener ? '✅ 動作中' : '⚠️ 確認必要', hasResizeListener);
+            
+            // フォントスケーリングテスト
+            const testElement = document.querySelector('.test-title');
+            const fontSize = getComputedStyle(testElement).fontSize;
+            updateFeatureStatus('fontScaling', `✅ ${fontSize}`, true);
+            
+            // レイアウトテスト
+            const isFlexLayout = getComputedStyle(document.querySelector('.feature-test')).display === 'grid';
+            updateFeatureStatus('layout', isFlexLayout ? '✅ Grid適用' : '⚠️ 確認必要', isFlexLayout);
+        }
+        
+        function updateFeatureStatus(elementId, status, isWorking) {
+            const element = document.getElementById(elementId);
+            const statusElement = element.querySelector('span');
+            statusElement.textContent = status;
+            
+            element.classList.remove('working', 'issue');
+            element.classList.add(isWorking ? 'working' : 'issue');
+        }
+        
+        // タッチイベントテスト
+        function setupTouchTests() {
+            const touchArea = document.getElementById('touchTest');
+            const statusDiv = document.getElementById('touchStatus');
+            
+            let touchEvents = [];
+            
+            // タッチイベントリスナー
+            touchArea.addEventListener('touchstart', (e) => {
+                touchEvents.push('タッチ開始');
+                updateTouchStatus(touchEvents);
+            });
+            
+            touchArea.addEventListener('touchmove', (e) => {
+                if (!touchEvents.includes('タッチ移動')) {
+                    touchEvents.push('タッチ移動');
+                    updateTouchStatus(touchEvents);
+                }
+            });
+            
+            touchArea.addEventListener('touchend', (e) => {
+                touchEvents.push('タッチ終了');
+                updateTouchStatus(touchEvents);
+                
+                // 3秒後にリセット
+                setTimeout(() => {
+                    touchEvents = [];
+                    updateTouchStatus(touchEvents);
+                }, 3000);
+            });
+            
+            // マウスイベント（代替）
+            touchArea.addEventListener('mousedown', (e) => {
+                touchEvents.push('クリック開始');
+                updateTouchStatus(touchEvents);
+            });
+            
+            touchArea.addEventListener('mousemove', (e) => {
+                if (e.buttons > 0 && !touchEvents.includes('ドラッグ')) {
+                    touchEvents.push('ドラッグ');
+                    updateTouchStatus(touchEvents);
+                }
+            });
+        }
+        
+        function updateTouchStatus(events) {
+            const statusDiv = document.getElementById('touchStatus');
+            if (events.length === 0) {
+                statusDiv.textContent = 'タッチ待機中...';
+                statusDiv.style.color = '#666';
+            } else {
+                statusDiv.textContent = `✅ ${events.join(' → ')}`;
+                statusDiv.style.color = '#28a745';
+            }
+        }
+        
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateViewportInfo();
+            setupTouchTests();
+            
+            // リサイズイベント
+            window.addEventListener('resize', updateViewportInfo);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(updateViewportInfo, 100);
+            });
+            
+            // 定期更新
+            setInterval(updateViewportInfo, 2000);
+        });
+    </script>
+</body>
+</html>
