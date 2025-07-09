@@ -14,7 +14,8 @@
       "Bash(do echo \"=== $file ===\")",
       "Bash(done)",
       "Bash(git branch:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
