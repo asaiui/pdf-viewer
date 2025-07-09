@@ -1,7 +1,7 @@
 {
     "name": "情報科学専門学校 学校案内 2026",
-    "short_name": "ISC学校案内",
-    "description": "岩崎学園情報科学専門学校の学校案内2026年版デジタルパンフレット",
+    "short_name": "スクールナビ",
+    "description": "岩崎学園情報科学専門学校の学校案内2026年版 - スクールナビ",
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#FFFFFF",

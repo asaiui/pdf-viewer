@@ -1,8 +1,8 @@
-# 情報科学専門学校 PDFビューア
+# 情報科学専門学校 スクールナビ
 
 ![ISC Logo](https://img.shields.io/badge/ISC-情報科学専門学校-0066CC?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDA2NkNDIi8+Cjx0ZXh0IHg9IjE2IiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SVNDPC90ZXh0Pgo8L3N2Zz4K)
 
-岩崎学園情報科学専門学校の学校案内2026年版をオンラインで閲覧できる高機能PDFビューアです。
+岩崎学園情報科学専門学校の学校案内2026年版をオンラインで閲覧できる高機能スクールナビです。
 
 ## 🌟 主な特徴
 

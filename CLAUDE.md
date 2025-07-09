@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Japanese PDF/SVG viewer web application (`情報科学専門学校 学校案内 2026`) designed to display a school brochure with interactive navigation. It's a Progressive Web App (PWA) built with vanilla JavaScript, HTML, and CSS that supports both PDF and SVG rendering modes.
+This is a Japanese PDF/SVG viewer web application called "スクールナビ" (`情報科学専門学校 学校案内 2026`) designed to display a school brochure with interactive navigation. It's a Progressive Web App (PWA) built with vanilla JavaScript, HTML, and CSS that supports both PDF and SVG rendering modes.
 
 ## Architecture
 
