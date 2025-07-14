@@ -67,6 +67,11 @@ class ISCPDFViewer {
             // グローバル参照を保存（リサイズイベント用）
             window.mobileTouchHandler = this.mobileTouchHandler;
         }
+        
+        // モバイルUI最適化の初期化
+        if (typeof MobileUIOptimizer !== 'undefined') {
+            this.mobileUIOptimizer = new MobileUIOptimizer(this);
+        }
 
         // 表示モード管理（SVG専用）
         this.viewMode = 'svg';
