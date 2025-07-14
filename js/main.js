@@ -60,6 +60,13 @@ class ISCPDFViewer {
         if (typeof SVGViewer !== 'undefined') {
             this.svgViewer = new SVGViewer(this);
         }
+        
+        // モバイルタッチハンドラーの初期化
+        if (typeof MobileTouchHandler !== 'undefined') {
+            this.mobileTouchHandler = new MobileTouchHandler(this);
+            // グローバル参照を保存（リサイズイベント用）
+            window.mobileTouchHandler = this.mobileTouchHandler;
+        }
 
         // 表示モード管理（SVG専用）
         this.viewMode = 'svg';
