@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リファクタリング版 SVG Book Flip Demo</title>
+    <meta name="description" content="SVGベースのインタラクティブな書籍ビューアデモ">
+    <link rel="stylesheet" href="book-flip.css">
+</head>
+<body>
+    <!-- アクセシビリティ改善: ナビゲーションスキップリンク -->
+    <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;z-index:999;padding:8px;background:#000;color:#fff;text-decoration:none;">メインコンテンツにスキップ</a>
+    
+    <!-- 目次トグルボタン -->
+    <button 
+        class="toc-toggle" 
+        id="tocToggle" 
+        aria-label="目次を開く"
+        aria-controls="toc"
+        aria-expanded="false"
+    >&#9776;</button>
+    
+    <!-- 目次ナビゲーション -->
+    <nav 
+        class="toc" 
+        id="toc" 
+        role="navigation" 
+        aria-label="ページ目次"
+        aria-hidden="true"
+    >
+        <button 
+            id="tocCloseBtn" 
+            aria-label="目次を閉じる"
+            style="position:absolute;top:10px;right:10px;font-size:1.5em;background:none;border:none;cursor:pointer;z-index:120;"
+        >&times;</button>
+        <h2 style="margin:0 0 1em 0;font-size:1.2em;color:#333;">ページ一覧</h2>
+        <ul id="tocList" role="list"></ul>
+    </nav>
+    <!-- メインコンテンツ -->
+    <main id="main-content" class="book-container">
+        <div 
+            class="book" 
+            role="application" 
+            aria-label="インタラクティブな書籍ビューア"
+            tabindex="0"
+            data-total-pages="30"
+        >
+            <!-- 静的左ページ: 常に現在の見開きの左側を表示 -->
+            <div class="static-left-page" aria-hidden="true">
+                <div class="page-content"></div>
+            </div>
+
+            <!-- Flippable Pages -->
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0001.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0002.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0002.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0003.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0003.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0004.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0004.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0005.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0005.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0006.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0006.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0007.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0007.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0008.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0008.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0009.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0009.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0010.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0010.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0011.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0011.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0012.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0012.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0013.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0013.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0014.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0014.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0015.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0015.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0016.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0016.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0017.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0017.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0018.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0018.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0019.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0019.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0020.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0020.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0021.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0021.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0022.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0022.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0023.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0023.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0024.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0024.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0025.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0025.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0026.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0026.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0027.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0027.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0028.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0028.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0029.svg');"></div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="page-face front">
+                    <div class="page-content" style="background-image: url('./SVG/page-0029.svg');"></div>
+                </div>
+                <div class="page-face back">
+                    <div class="page-content" style="background-image: url('./SVG/page-0030.svg');"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- リファクタリング済みのJavaScript -->
+    <script src="book-flip.js"></script>
+</body>
+</html>

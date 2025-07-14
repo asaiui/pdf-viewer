@@ -1,0 +1,333 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #e8e8e8;
+    background-image: radial-gradient(circle at center, #f7f7f7, #d8d8d8);
+    margin: 0;
+}
+
+.book-container {
+    perspective: 2500px;
+}
+
+.book {
+    width: 1000px;
+    /* Viewer width */
+    height: 700px;
+    /* Viewer height */
+    position: relative;
+    transform-style: preserve-3d;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.page {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform-origin: left center;
+    transition: transform 1.2s ease-in-out;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    backface-visibility: hidden;
+    /* Prevent flicker during animation */
+}
+
+.page.flipped {
+    transform: rotateY(-180deg);
+}
+
+.page-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background-color: #fff;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0) 5%), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAD1BMVEX////29vb19fXz8/Px8fF4sA4LAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABhJREFUOI1jYBgFoyEwGgKjITAaAqMhMMgAAQACEAABaX2w2QAAAABJRU5ErkJggg==');
+}
+
+.page-face.back {
+    transform: rotateY(180deg);
+}
+
+.page-content {
+    width: 100%;
+    height: 100%;
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+}
+
+.front .page-content {
+    background-position: 100% 0;
+    /* Show right side of the image */
+}
+
+.back .page-content {
+    background-position: 0 0;
+    /* Show left side of the image */
+}
+
+.static-left-page {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    overflow: hidden;
+    /* Ensure content stays within bounds */
+    box-shadow: inset 5px 0 15px -5px rgba(0, 0, 0, 0.1);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAD1BMVEX////29vb19fXz8/Px8fF4sA4LAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABhJREFUOI1jYBgFoyEwGgKjITAaAqMhMMgAAQACEAABaX2w2QAAAABJRU5ErkJggg==');
+}
+
+.static-left-page .page-content {
+    width: 100%;
+    height: 100%;
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    /* Explicitly show the left side of the image */
+}
+
+/* 目次パネル */
+.toc {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: #fff;
+    box-shadow: 2px 0 12px #0002;
+    overflow-y: auto;
+    z-index: 150;
+    padding: 2.5em 0.5em 1em 0.5em;
+    /* 上部余白を増やす */
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+}
+
+.toc.open {
+    transform: translateX(0);
+}
+
+.toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc li {
+    margin: 0.5em 0;
+    cursor: pointer;
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.toc li:hover {
+    background: #f0f6ff;
+}
+
+.toc li.active {
+    font-weight: bold;
+    color: #0066cc;
+    background: #e6f0fa;
+}
+
+.toc-toggle {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    font-size: 2em;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 1px 1px 6px #0001;
+    z-index: 200;
+    cursor: pointer;
+    padding: 0.2em 0.5em;
+    display: block;
+    transition: opacity 0.2s;
+}
+
+.toc.open~.toc-toggle {
+    display: none;
+}
+
+.toc button#tocCloseBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 160;
+    padding: 0.1em 0.5em;
+    color: #333;
+}
+
+.toc button#tocCloseBtn:hover {
+    background: #f0f0f0;
+}
+
+/* パフォーマンス最適化: アニメーション制御クラス */
+.page.animating {
+    pointer-events: none;
+}
+
+.book.disabled {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* z-indexクラスベース制御 */
+.page.z-top { z-index: 1000; }
+.page.z-high { z-index: 900; }
+.page.z-medium { z-index: 800; }
+.page.z-low { z-index: 700; }
+.page.z-bottom { z-index: 600; }
+
+/* アクセシビリティ改善 */
+.page:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+.book:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 4px;
+}
+
+/* キーボードナビゲーション表示 */
+.keyboard-help {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 2px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    max-width: 400px;
+    font-family: Arial, sans-serif;
+    line-height: 1.4;
+}
+
+.keyboard-help h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.keyboard-help ul {
+    list-style: none;
+    padding: 0;
+}
+
+.keyboard-help li {
+    margin: 8px 0;
+    padding: 4px 0;
+}
+
+.keyboard-help kbd {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+/* エラー表示スタイル */
+.error-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+    z-index: 9999;
+    font-size: 14px;
+    max-width: 300px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 成功メッセージ */
+.success-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #44aa44;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(68, 170, 68, 0.3);
+    z-index: 9999;
+    font-size: 14px;
+    max-width: 300px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* レスポンシブ改善 */
+/* モバイル時は目次をオーバーレイに */
+@media (max-width: 900px) {
+    .toc {
+        width: 80vw;
+        max-width: 400px;
+        box-shadow: 4px 0 24px #0003;
+    }
+
+    .toc-toggle {
+        display: block;
+    }
+
+    /* モバイルでのアクセシビリティ改善 */
+    .page:focus {
+        outline: 3px solid #0066cc;
+        outline-offset: 3px;
+    }
+    
+    .book:focus {
+        outline: 4px solid #0066cc;
+        outline-offset: 5px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .book {
+        width: 90vw;
+        height: 63vw;
+        max-width: 1000px;
+        max-height: 700px;
+    }
+}
+
+@media (max-width: 700px) {
+    .book {
+        width: 100vw;
+        height: 70vw;
+        min-width: 320px;
+        min-height: 220px;
+    }
+
+    .static-left-page, .page {
+        width: 50vw;
+    }
+}
