@@ -38,9 +38,9 @@
     <link rel="stylesheet" href="style.css">
 
     <!-- SVGファイルのプリロード -->
-    <link rel="prefetch" href="svg/入案圧縮-0001.svg">
-    <link rel="prefetch" href="svg/入案圧縮-0002.svg">
-    <link rel="prefetch" href="svg/入案圧縮-0003.svg">
+    <link rel="prefetch" href="SVG/入案圧縮-0001.svg">
+    <link rel="prefetch" href="SVG/入案圧縮-0002.svg">
+    <link rel="prefetch" href="SVG/入案圧縮-0003.svg">
     
     <!-- PWA対応 -->
     <link rel="manifest" href="manifest.json">
@@ -334,6 +334,11 @@
                     <button class="zoom-btn" id="zoomInBtn" aria-label="拡大" title="拡大 (+)">＋</button>
                     <button class="zoom-btn" id="fitWidthBtn" aria-label="幅に合わせる" title="幅に合わせる (W)">幅調整</button>
                     <button class="zoom-btn" id="fitPageBtn" aria-label="ページに合わせる" title="全体表示 (F)">全体</button>
+                    <button class="zoom-btn split-mode-btn" id="splitModeBtn" aria-label="分割表示モード" title="分割表示モード (S)" aria-pressed="false">
+                        <span class="split-icon">⫶</span>
+                        <span class="split-text">分割</span>
+                    </button>
+                    <div class="split-indicator" id="splitIndicator" aria-live="polite">全体</div>
                     <button class="zoom-btn fullscreen-btn" id="fullscreenBtn" aria-label="全画面表示" title="全画面表示 (F11)">⛶</button>
                 </div>
             </div>
@@ -370,6 +375,10 @@
                     <span class="shortcut-desc">幅調整</span>
                 </div>
                 <div class="shortcut-item">
+                    <span class="shortcut-key">S</span>
+                    <span class="shortcut-desc">左右分割表示</span>
+                </div>
+                <div class="shortcut-item">
                     <span class="shortcut-key">F11</span>
                     <span class="shortcut-desc">全画面</span>
                 </div>
@@ -385,6 +394,7 @@
             <button class="keyboard-help-close" onclick="document.getElementById('keyboardHelp').style.display='none'">閉じる</button>
         </div>
     </div>
+
 
     <!-- Scripts -->
     <script src="js/config.js"></script>

@@ -1,6 +1,9 @@
 # CLAUDE.md
-必ず日本語で返して
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Important Instructions
+必ず日本語で返して（Always respond in Japanese）
 
 ## Project Overview
 
@@ -13,55 +16,90 @@ The application follows a modular architecture with a main controller class coor
 ### Core System
 - **ISCPDFViewer** (main.js) - Main application controller that orchestrates all modules
 - **SVGViewer** (svg-viewer.js) - High-performance SVG rendering system with caching and preload
-- **PDFLoader** (pdf-loader.js) - Handles PDF loading, rendering, and file management using PDF.js
 - **CDNManager** (cdn-manager.js) - Manages external library loading and fallbacks
+- **Config** (config.js) - Application configuration and constants
 
 ### UI & Navigation
-- **PageNavigator** (page-navigator.js) - Manages page navigation, controls, and keyboard shortcuts
-- **ZoomManager** (zoom-manager.js) - Controls zoom functionality and canvas scaling
 - **FullscreenManager** (fullscreen-manager.js) - Handles fullscreen mode and related controls
 - **MobileMenu** (mobile-menu.js) - Enhanced mobile navigation with swipe gestures and focus trap
+- **MobileUIOptimizer** (mobile-ui-optimizer.js) - Mobile-specific UI optimizations
+- **MobileTouchHandler** (mobile-touch-handler.js) - Touch interaction handling
 
 ### Responsive & Touch
 - **TouchGestureManager** (touch-gesture-manager.js) - Touch and swipe gesture handling
 - **ResponsiveLayoutManager** (responsive-layout-manager.js) - Adaptive layout management
 
-### Performance & Analytics
+### Analytics & Content
 - **ContentAnalyzer** (content-analyzer.js) - Analyzes content for table of contents generation
-- **PerformanceMonitor** (performance-monitor.js) - Real-time performance tracking
-- **IntelligentPrefetch** (intelligent-prefetch.js) - Smart content preloading
-- **AdaptiveQuality** (adaptive-quality.js) - Dynamic quality adjustment
 
-### Advanced Features
-- **ProgressiveLoader** (progressive-loader.js) - Chunked loading for large files
-- **ParallelRenderer** (parallel-renderer.js) - Multi-threaded rendering support
-- **RenderWorker** (render-worker.js) - Web Worker for background processing
-- **RealtimeDashboard** (realtime-dashboard.js) - Development monitoring dashboard
+### Note on Missing Modules
+Several modules referenced in documentation may not exist in current codebase:
+- PDFLoader, PageNavigator, ZoomManager functionality is integrated into main.js
+- PerformanceMonitor, IntelligentPrefetch, AdaptiveQuality are not implemented
+- ProgressiveLoader, ParallelRenderer, RenderWorker, RealtimeDashboard are not present
 
 ## Development Commands
 
 Since this is a frontend-only application with no build process:
 
-- **Local Development**: Use any static file server (e.g., `python -m http.server`, `npx serve`, or VS Code Live Server)
-- **Testing**: Open in browser and test functionality manually
+- **Local Development**: Use any static file server
+  ```bash
+  # Python 3.x
+  python -m http.server 8000
+  
+  # Node.js serve package
+  npx serve .
+  
+  # VS Code Live Server extension
+  ```
+- **Testing**: Manual testing in browser - no automated test framework
 - **Deployment**: Deploy static files to any web server or GitHub Pages
+- **Git Operations**: Standard git workflow (no pre-commit hooks or linting configured)
+
+## Common Issues and Solutions
+
+### SVG File Path Issues
+- Ensure `SVG/` directory (uppercase) contains files named `入案圧縮-0001.svg` to `入案圧縮-0030.svg`
+- Check HTML prefetch links use correct case-sensitive paths: `SVG/入案圧縮-0001.svg`
+- Verify server deployment includes all SVG files with correct directory structure
+
+### Split Mode Navigation
+- Split mode changes page navigation: left → right → next page's left half
+- Methods `nextPage()` and `prevPage()` in main.js handle split mode logic
+- Use `this.svgViewer.splitMode` property (not `getSplitMode()` method) to check split state
 
 ## File Structure
 
 - `index.html` - Main application entry point with comprehensive table of contents
 - `style.css` - Complete responsive styling with mobile-first approach
-- `js/` - Modular JavaScript components (20+ modules)
-- `SVG/` - SVG files with naming pattern `入案圧縮-NNNN.svg`
-- `pdf/` - Contains the target PDF file (`test.pdf`)
+- `js/` - Modular JavaScript components (11 files currently)
+  - `main.js` - Main application controller (ISCPDFViewer class)
+  - `svg-viewer.js` - SVG rendering and caching system
+  - `cdn-manager.js` - External library loading management
+  - `config.js` - Application configuration
+  - Mobile-specific modules: mobile-menu.js, mobile-ui-optimizer.js, mobile-touch-handler.js
+  - Touch & responsive: touch-gesture-manager.js, responsive-layout-manager.js
+  - UI components: fullscreen-manager.js, content-analyzer.js
+- `SVG/` - SVG files with naming pattern `入案圧縮-NNNN.svg` (30 files, pages 0001-0030)
+- `pdf/` - PDF files (`test.pdf`, `school-guide-2026.pdf`)
+- `Demo/` - Fallback demo content with book-flip effect
 - `manifest.json` - PWA configuration with shortcuts and icons
+- `sw.js` - Service Worker for PWA functionality
+- `uploads/` - Usage tracking JSON files
 
 ## Important Implementation Details
 
-### Dual Rendering Mode
-The application supports both PDF and SVG rendering:
-- **SVG Mode**: Primary mode using optimized SVG files from `SVG/` directory
-- **PDF Mode**: Fallback using PDF.js when SVG files are unavailable
-- **Demo Mode**: Fallback content when both PDF and SVG are unavailable
+### Current Implementation Status
+The application primarily operates in **SVG Mode**:
+- **SVG Mode**: Primary and currently implemented mode using optimized SVG files from `SVG/` directory
+- **PDF Mode**: Referenced in code but not fully implemented (PDF.js integration incomplete)
+- **Demo Mode**: Fallback content available in `Demo/` directory with book-flip effect
+
+### Split Screen Feature
+The application includes a split-screen mode for viewing pages:
+- **Left/Right Split**: Pages can be split vertically to show left or right halves
+- **Navigation Flow**: Left half → Right half → Next page's left half
+- **Controls**: Toggle with 'S' key or split button, click split indicator to switch sides
 
 ### SVG Loading Strategy
 SVG files are loaded from `SVG/入案圧縮-NNNN.svg` with:

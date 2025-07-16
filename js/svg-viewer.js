@@ -12,7 +12,14 @@ class SVGViewer {
         this.preloadQueue = [];
         this.isLoading = false;
         
+        // 分割表示モード関連
+        this.splitMode = false; // 分割モードのON/OFF
+        this.currentSplit = 'left'; // 'left' または 'right'
+        this.splitViewBox = null; // 現在の分割viewBox
+        this.originalViewBox = null; // 元のviewBox
+        
         this.initializeSVGContainer();
+        this.loadSplitModeSettings();
     }
 
     /**
@@ -176,8 +183,18 @@ class SVGViewer {
         this.svgContainer.innerHTML = '';
 
         // 新しいSVGを追加
-        this.svgContainer.appendChild(svgElement.cloneNode(true));
-        this.currentSVG = svgElement;
+        const clonedSVG = svgElement.cloneNode(true);
+        this.svgContainer.appendChild(clonedSVG);
+        this.currentSVG = clonedSVG;
+
+        // 元のviewBoxを保存
+        this.saveOriginalViewBox(clonedSVG);
+
+        // 分割表示を適用
+        this.applySplitView();
+
+        // 分割モードUI更新
+        this.updateSplitModeUI();
 
         // フェードインアニメーション
         this.svgContainer.style.opacity = '0';
@@ -299,5 +316,182 @@ class SVGViewer {
             this.svgContainer.remove();
         }
 
+    }
+
+    /**
+     * 分割表示モードの設定読み込み
+     */
+    loadSplitModeSettings() {
+        try {
+            const settings = localStorage.getItem('svg-split-mode');
+            if (settings) {
+                const parsed = JSON.parse(settings);
+                this.splitMode = parsed.enabled || false;
+                this.currentSplit = parsed.position || 'top';
+            }
+        } catch (error) {
+            console.log('Split mode settings load failed:', error);
+            this.splitMode = false;
+            this.currentSplit = 'top';
+        }
+    }
+
+    /**
+     * 分割表示モードの設定保存
+     */
+    saveSplitModeSettings() {
+        try {
+            const settings = {
+                enabled: this.splitMode,
+                position: this.currentSplit
+            };
+            localStorage.setItem('svg-split-mode', JSON.stringify(settings));
+        } catch (error) {
+            console.log('Split mode settings save failed:', error);
+        }
+    }
+
+    /**
+     * 分割表示モードの切り替え
+     */
+    toggleSplitMode() {
+        this.splitMode = !this.splitMode;
+        this.saveSplitModeSettings();
+        
+        if (this.currentSVG) {
+            this.applySplitView();
+        }
+        
+        // UI更新
+        this.updateSplitModeUI();
+        
+        return this.splitMode;
+    }
+
+    /**
+     * 分割位置の切り替え（上半分⇔下半分）
+     */
+    toggleSplitPosition() {
+        if (!this.splitMode) return;
+        
+        this.currentSplit = this.currentSplit === 'left' ? 'right' : 'left';
+        this.saveSplitModeSettings();
+        
+        if (this.currentSVG) {
+            this.applySplitView();
+        }
+        
+        return this.currentSplit;
+    }
+
+    /**
+     * SVGに分割表示を適用
+     */
+    applySplitView() {
+        if (!this.currentSVG) return;
+
+        if (this.splitMode) {
+            // 分割モードの場合
+            this.applySplitViewBox();
+        } else {
+            // 通常モードの場合
+            this.restoreOriginalViewBox();
+        }
+    }
+
+    /**
+     * 分割viewBoxを適用
+     */
+    applySplitViewBox() {
+        if (!this.currentSVG || !this.originalViewBox) return;
+
+        const [x, y, width, height] = this.originalViewBox.split(' ').map(Number);
+        
+        let newViewBox;
+        if (this.currentSplit === 'left') {
+            // 左半分を表示
+            newViewBox = `${x} ${y} ${width / 2} ${height}`;
+        } else {
+            // 右半分を表示
+            newViewBox = `${x + width / 2} ${y} ${width / 2} ${height}`;
+        }
+
+        this.currentSVG.setAttribute('viewBox', newViewBox);
+        this.splitViewBox = newViewBox;
+        
+        // アニメーション効果
+        this.currentSVG.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    }
+
+    /**
+     * 元のviewBoxを復元
+     */
+    restoreOriginalViewBox() {
+        if (!this.currentSVG || !this.originalViewBox) return;
+        
+        this.currentSVG.setAttribute('viewBox', this.originalViewBox);
+        this.splitViewBox = null;
+        
+        // アニメーション効果
+        this.currentSVG.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    }
+
+    /**
+     * SVG表示時に元のviewBoxを保存
+     */
+    saveOriginalViewBox(svgElement) {
+        const viewBox = svgElement.getAttribute('viewBox');
+        if (viewBox && !this.originalViewBox) {
+            this.originalViewBox = viewBox;
+        }
+    }
+
+    /**
+     * 分割モードUI更新
+     */
+    updateSplitModeUI() {
+        // 分割モードボタンの状態更新
+        const splitBtn = document.getElementById('splitModeBtn');
+        if (splitBtn) {
+            splitBtn.classList.toggle('active', this.splitMode);
+            splitBtn.setAttribute('aria-pressed', this.splitMode.toString());
+        }
+
+        // 分割位置表示の更新
+        const splitIndicator = document.getElementById('splitIndicator');
+        if (splitIndicator) {
+            splitIndicator.textContent = this.splitMode ? 
+                (this.currentSplit === 'left' ? '左半分' : '右半分') : '全体';
+        }
+    }
+
+    /**
+     * モバイル用分割切り替えメソッド（タッチ操作用）
+     */
+    handleSplitSwipe(direction) {
+        if (!this.splitMode) return false;
+        
+        // 左スワイプで右半分、右スワイプで左半分
+        const newSplit = direction === 'left' ? 'right' : 'left';
+        
+        if (newSplit !== this.currentSplit) {
+            this.currentSplit = newSplit;
+            this.saveSplitModeSettings();
+            this.applySplitView();
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * 分割モード状態取得
+     */
+    getSplitModeState() {
+        return {
+            enabled: this.splitMode,
+            position: this.currentSplit,
+            viewBox: this.splitViewBox
+        };
     }
 }

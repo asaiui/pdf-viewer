@@ -217,18 +217,60 @@ class ISCPDFViewer {
     }
 
     nextPage() {
-        this.goToPage(this.currentPage + 1);
+        // 分割モード時は左→右→次のページの左という順序で移動
+        if (this.svgViewer && this.svgViewer.splitMode) {
+            const currentSplit = this.svgViewer.currentSplit;
+            if (currentSplit === 'left') {
+                // 左半分表示中なら右半分を表示
+                this.svgViewer.toggleSplitPosition();
+            } else {
+                // 右半分表示中なら次のページの左半分を表示
+                this.svgViewer.currentSplit = 'left';
+                this.svgViewer.saveSplitModeSettings();
+                this.svgViewer.updateSplitModeUI();
+                this.goToPage(this.currentPage + 1);
+            }
+        } else {
+            this.goToPage(this.currentPage + 1);
+        }
     }
 
     prevPage() {
-        this.goToPage(this.currentPage - 1);
+        // 分割モード時は右→左→前のページの右という順序で移動
+        if (this.svgViewer && this.svgViewer.splitMode) {
+            const currentSplit = this.svgViewer.currentSplit;
+            if (currentSplit === 'right') {
+                // 右半分表示中なら左半分を表示
+                this.svgViewer.toggleSplitPosition();
+            } else {
+                // 左半分表示中なら前のページの右半分を表示
+                this.svgViewer.currentSplit = 'right';
+                this.svgViewer.saveSplitModeSettings();
+                this.svgViewer.updateSplitModeUI();
+                this.goToPage(this.currentPage - 1);
+            }
+        } else {
+            this.goToPage(this.currentPage - 1);
+        }
     }
 
     firstPage() {
+        // 分割モード時は最初のページの左半分を表示
+        if (this.svgViewer && this.svgViewer.splitMode) {
+            this.svgViewer.currentSplit = 'left';
+            this.svgViewer.saveSplitModeSettings();
+            this.svgViewer.updateSplitModeUI();
+        }
         this.goToPage(1);
     }
 
     lastPage() {
+        // 分割モード時は最後のページの右半分を表示
+        if (this.svgViewer && this.svgViewer.splitMode) {
+            this.svgViewer.currentSplit = 'right';
+            this.svgViewer.saveSplitModeSettings();
+            this.svgViewer.updateSplitModeUI();
+        }
         this.goToPage(this.totalPages);
     }
 
@@ -277,6 +319,32 @@ class ISCPDFViewer {
         } else {
             document.exitFullscreen();
             this.pdfViewerContainer.classList.remove('fullscreen');
+        }
+    }
+
+    // 分割表示モード切り替え
+    toggleSplitMode() {
+        if (this.svgViewer) {
+            const isEnabled = this.svgViewer.toggleSplitMode();
+            this.updateLoadStatus(isEnabled ? '🔄 分割表示モード ON' : '📱 分割表示モード OFF');
+            
+            // 分割インジケーターをクリックで位置切り替え
+            const splitIndicator = document.getElementById('splitIndicator');
+            if (splitIndicator && isEnabled) {
+                splitIndicator.style.cursor = 'pointer';
+                splitIndicator.onclick = () => this.toggleSplitPosition();
+            } else if (splitIndicator) {
+                splitIndicator.style.cursor = 'default';
+                splitIndicator.onclick = null;
+            }
+        }
+    }
+
+    // 分割位置切り替え
+    toggleSplitPosition() {
+        if (this.svgViewer) {
+            const newPosition = this.svgViewer.toggleSplitPosition();
+            this.updateLoadStatus(`🔄 ${newPosition === 'top' ? '上半分' : '下半分'} 表示中`);
         }
     }
 
@@ -369,12 +437,14 @@ class ISCPDFViewer {
         const fitWidthBtn = document.getElementById('fitWidthBtn');
         const fitPageBtn = document.getElementById('fitPageBtn');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const splitModeBtn = document.getElementById('splitModeBtn');
 
         if (zoomInBtn) zoomInBtn.addEventListener('click', () => this.zoomIn());
         if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => this.zoomOut());
         if (fitWidthBtn) fitWidthBtn.addEventListener('click', () => this.fitToWidth());
         if (fitPageBtn) fitPageBtn.addEventListener('click', () => this.fitToPage());
         if (fullscreenBtn) fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+        if (splitModeBtn) splitModeBtn.addEventListener('click', () => this.toggleSplitMode());
 
         // ページ入力
         if (this.pageInput) {
@@ -466,6 +536,11 @@ class ISCPDFViewer {
                 case 'W':
                     e.preventDefault();
                     this.fitToWidth();
+                    break;
+                case 's':
+                case 'S':
+                    e.preventDefault();
+                    this.toggleSplitMode();
                     break;
                 case 'F11':
                     e.preventDefault();

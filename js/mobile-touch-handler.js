@@ -113,12 +113,15 @@ class MobileTouchHandler {
             this.handleTap(this.touchState.startX, this.touchState.startY);
         }
         // スワイプ判定
-        else if (
-            duration < this.config.swipeTimeThreshold && 
-            Math.abs(deltaX) > this.config.swipeThreshold &&
-            Math.abs(deltaX) > Math.abs(deltaY) * 2 // 横スワイプを重視
-        ) {
-            this.handleSwipe(deltaX > 0 ? 'right' : 'left');
+        else if (duration < this.config.swipeTimeThreshold && distance > this.config.swipeThreshold) {
+            // 横スワイプ（ページ移動）
+            if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                this.handleSwipe(deltaX > 0 ? 'right' : 'left');
+            }
+            // 縦スワイプ（分割エリア切り替え）
+            else if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+                this.handleVerticalSwipe(deltaY > 0 ? 'down' : 'up');
+            }
         }
         
         this.resetTouchState();
@@ -210,6 +213,17 @@ class MobileTouchHandler {
                 this.viewer.prevPage();
                 this.showFeedback('前のページ');
                 break;
+        }
+    }
+    
+    handleVerticalSwipe(direction) {
+        // 分割モードでのみ縦スワイプを処理
+        if (this.viewer.svgViewer && this.viewer.svgViewer.splitMode) {
+            const success = this.viewer.svgViewer.handleSplitSwipe(direction);
+            if (success) {
+                const position = direction === 'up' ? '下半分' : '上半分';
+                this.showFeedback(position);
+            }
         }
     }
     
