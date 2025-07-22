@@ -59,8 +59,8 @@ Since this is a frontend-only application with no build process:
 ## Common Issues and Solutions
 
 ### SVG File Path Issues
-- Ensure `SVG/` directory (uppercase) contains files named `入案圧縮-0001.svg` to `入案圧縮-0030.svg`
-- Check HTML prefetch links use correct case-sensitive paths: `SVG/入案圧縮-0001.svg`
+- Ensure `SVG/` directory (uppercase) contains files named `page-0001.svg` to `page-0030.svg`
+- Check HTML prefetch links use correct case-sensitive paths: `SVG/page-0001.svg`
 - Verify server deployment includes all SVG files with correct directory structure
 
 ### Split Mode Navigation
@@ -80,7 +80,7 @@ Since this is a frontend-only application with no build process:
   - Mobile-specific modules: mobile-menu.js, mobile-ui-optimizer.js, mobile-touch-handler.js
   - Touch & responsive: touch-gesture-manager.js, responsive-layout-manager.js
   - UI components: fullscreen-manager.js, content-analyzer.js
-- `SVG/` - SVG files with naming pattern `入案圧縮-NNNN.svg` (30 files, pages 0001-0030)
+- `SVG/` - SVG files with naming pattern `page-NNNN.svg` (30 files, pages 0001-0030)
 - `pdf/` - PDF files (`test.pdf`, `school-guide-2026.pdf`)
 - `Demo/` - Fallback demo content with book-flip effect
 - `manifest.json` - PWA configuration with shortcuts and icons
@@ -102,7 +102,7 @@ The application includes a split-screen mode for viewing pages:
 - **Controls**: Toggle with 'S' key or split button, click split indicator to switch sides
 
 ### SVG Loading Strategy
-SVG files are loaded from `SVG/入案圧縮-NNNN.svg` with:
+SVG files are loaded from `SVG/page-NNNN.svg` with:
 - Intelligent caching system (max 10 files)
 - Preload queue for adjacent pages
 - Optimized SVG element processing with responsive attributes

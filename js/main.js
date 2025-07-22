@@ -134,7 +134,7 @@ class ISCPDFViewer {
         this.hideAppLoading();
         await this.renderPage();
 
-        this.updateLoadStatus('✅ SVGビューアが準備完了');
+        this.updateLoadStatus('✅ WebPビューアが準備完了');
     }
 
     showAppLoading() {
@@ -156,7 +156,7 @@ class ISCPDFViewer {
 
     async renderPage() {
 
-        // SVGビューアでページを読み込み
+        // WebPビューアでページを読み込み
         if (this.svgViewer) {
             try {
                 await this.svgViewer.loadSVGPage(this.currentPage);
@@ -165,12 +165,12 @@ class ISCPDFViewer {
                 this.updatePageDisplay();
                 return;
             } catch (error) {
-                this.showError('SVGページの読み込みに失敗しました');
+                this.showError('WebPページの読み込みに失敗しました');
                 return;
             }
         }
 
-        this.showError('SVGビューアが初期化されていません');
+        this.showError('WebPビューアが初期化されていません');
     }
 
 
@@ -217,64 +217,22 @@ class ISCPDFViewer {
     }
 
     nextPage() {
-        // 分割モード時は左→右→次のページの左という順序で移動
-        if (this.svgViewer && this.svgViewer.splitMode) {
-            const currentSplit = this.svgViewer.currentSplit;
-            if (currentSplit === 'left') {
-                // 左半分表示中なら右半分を表示
-                this.svgViewer.toggleSplitPosition();
-            } else {
-                // 右半分表示中なら次のページの左半分を表示
-                this.svgViewer.currentSplit = 'left';
-                this.svgViewer.saveSplitModeSettings();
-                this.svgViewer.updateSplitModeUI();
-                this.goToPage(this.currentPage + 1);
-            }
-        } else {
-            this.goToPage(this.currentPage + 1);
-        }
+        this.goToPage(this.currentPage + 1);
     }
 
     prevPage() {
-        // 分割モード時は右→左→前のページの右という順序で移動
-        if (this.svgViewer && this.svgViewer.splitMode) {
-            const currentSplit = this.svgViewer.currentSplit;
-            if (currentSplit === 'right') {
-                // 右半分表示中なら左半分を表示
-                this.svgViewer.toggleSplitPosition();
-            } else {
-                // 左半分表示中なら前のページの右半分を表示
-                this.svgViewer.currentSplit = 'right';
-                this.svgViewer.saveSplitModeSettings();
-                this.svgViewer.updateSplitModeUI();
-                this.goToPage(this.currentPage - 1);
-            }
-        } else {
-            this.goToPage(this.currentPage - 1);
-        }
+        this.goToPage(this.currentPage - 1);
     }
 
     firstPage() {
-        // 分割モード時は最初のページの左半分を表示
-        if (this.svgViewer && this.svgViewer.splitMode) {
-            this.svgViewer.currentSplit = 'left';
-            this.svgViewer.saveSplitModeSettings();
-            this.svgViewer.updateSplitModeUI();
-        }
         this.goToPage(1);
     }
 
     lastPage() {
-        // 分割モード時は最後のページの右半分を表示
-        if (this.svgViewer && this.svgViewer.splitMode) {
-            this.svgViewer.currentSplit = 'right';
-            this.svgViewer.saveSplitModeSettings();
-            this.svgViewer.updateSplitModeUI();
-        }
         this.goToPage(this.totalPages);
     }
 
-    // ズーム機能（SVG専用）
+    // ズーム機能（WebP専用）
     zoomIn() {
         if (this.svgViewer) {
             this.currentZoom = Math.min(this.currentZoom * 1.2, 5.0);
@@ -295,7 +253,7 @@ class ISCPDFViewer {
 
     fitToWidth() {
         if (this.svgViewer) {
-            this.currentZoom = 1.3; // SVGの場合は固定値
+            this.currentZoom = 1.3; // WebPの場合は固定値
             this.svgViewer.setZoom(this.currentZoom);
             this.updateZoomDisplay();
         }
@@ -322,31 +280,7 @@ class ISCPDFViewer {
         }
     }
 
-    // 分割表示モード切り替え
-    toggleSplitMode() {
-        if (this.svgViewer) {
-            const isEnabled = this.svgViewer.toggleSplitMode();
-            this.updateLoadStatus(isEnabled ? '🔄 分割表示モード ON' : '📱 分割表示モード OFF');
-            
-            // 分割インジケーターをクリックで位置切り替え
-            const splitIndicator = document.getElementById('splitIndicator');
-            if (splitIndicator && isEnabled) {
-                splitIndicator.style.cursor = 'pointer';
-                splitIndicator.onclick = () => this.toggleSplitPosition();
-            } else if (splitIndicator) {
-                splitIndicator.style.cursor = 'default';
-                splitIndicator.onclick = null;
-            }
-        }
-    }
 
-    // 分割位置切り替え
-    toggleSplitPosition() {
-        if (this.svgViewer) {
-            const newPosition = this.svgViewer.toggleSplitPosition();
-            this.updateLoadStatus(`🔄 ${newPosition === 'top' ? '上半分' : '下半分'} 表示中`);
-        }
-    }
 
     // ユーティリティメソッド
     updateProgress(percentage, text) {
@@ -437,14 +371,12 @@ class ISCPDFViewer {
         const fitWidthBtn = document.getElementById('fitWidthBtn');
         const fitPageBtn = document.getElementById('fitPageBtn');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const splitModeBtn = document.getElementById('splitModeBtn');
 
         if (zoomInBtn) zoomInBtn.addEventListener('click', () => this.zoomIn());
         if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => this.zoomOut());
         if (fitWidthBtn) fitWidthBtn.addEventListener('click', () => this.fitToWidth());
         if (fitPageBtn) fitPageBtn.addEventListener('click', () => this.fitToPage());
         if (fullscreenBtn) fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
-        if (splitModeBtn) splitModeBtn.addEventListener('click', () => this.toggleSplitMode());
 
         // ページ入力
         if (this.pageInput) {
@@ -536,11 +468,6 @@ class ISCPDFViewer {
                 case 'W':
                     e.preventDefault();
                     this.fitToWidth();
-                    break;
-                case 's':
-                case 'S':
-                    e.preventDefault();
-                    this.toggleSplitMode();
                     break;
                 case 'F11':
                     e.preventDefault();

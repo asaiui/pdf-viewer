@@ -15,7 +15,8 @@
       "Bash(done)",
       "Bash(git branch:*)",
       "Bash(find:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

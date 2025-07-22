@@ -1,0 +1,76 @@
+{
+  "blocks": [
+    {
+      "startTime": "2025-07-02T05:00:00.000Z",
+      "endTime": "2025-07-02T10:00:00.000Z",
+      "actualEndTime": "2025-07-02T09:11:32.620Z",
+      "perModelStats": {
+        "claude-sonnet-4-20250514": {
+          "tokenCounts": {
+            "inputTokens": 2866,
+            "outputTokens": 19526,
+            "cacheCreationTokens": 1075114,
+            "cacheReadTokens": 18383886,
+            "totalTokens": 22392
+          },
+          "costUSD": 9.848331,
+          "entriesCount": 217
+        }
+      },
+      "totalTokens": 22392,
+      "totalTokensOld": 22392,
+      "costUSD": 9.848331,
+      "entries": 219,
+      "limits": [
+        {
+          "type": "general_limit",
+          "timestamp": "2025-07-02T06:21:41.224Z",
+          "content": "Claude AI usage limit reached|1751443200",
+          "resetTime": "2025-07-02T08:00:00.000Z"
+        },
+        {
+          "type": "general_limit",
+          "timestamp": "2025-07-02T07:41:59.118Z",
+          "content": "Claude AI usage limit reached|1751443200",
+          "resetTime": "2025-07-02T08:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "startTime": "2025-07-09T04:00:00.000Z",
+      "endTime": "2025-07-09T09:00:00.000Z",
+      "actualEndTime": "2025-07-09T08:50:43.361Z",
+      "perModelStats": {
+        "claude-sonnet-4-20250514": {
+          "tokenCounts": {
+            "inputTokens": 5986,
+            "outputTokens": 22065,
+            "cacheCreationTokens": 762909,
+            "cacheReadTokens": 14503818,
+            "totalTokens": 28051
+          },
+          "costUSD": 7.560987,
+          "entriesCount": 219
+        }
+      },
+      "totalTokens": 28051,
+      "totalTokensOld": 28051,
+      "costUSD": 7.560987,
+      "entries": 221,
+      "limits": [
+        {
+          "type": "general_limit",
+          "timestamp": "2025-07-09T08:06:21.206Z",
+          "content": "Claude AI usage limit reached|1752051600",
+          "resetTime": "2025-07-09T09:00:00.000Z"
+        },
+        {
+          "type": "general_limit",
+          "timestamp": "2025-07-09T08:50:43.361Z",
+          "content": "Claude AI usage limit reached|1752051600",
+          "resetTime": "2025-07-09T09:00:00.000Z"
+        }
+      ]
+    }
+  ]
+}
