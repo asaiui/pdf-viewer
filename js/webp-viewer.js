@@ -1,16 +1,16 @@
 /**
- * WebPビューア - 高性能画像ビューア
+ * PNGビューア - 高性能画像ビューア
  * AsyncManagerと連携してパフォーマンス最適化
  */
-class WebPViewer {
+class PNGViewer {
     constructor(viewer) {
         this.viewer = viewer;
         this.svgContainer = null;
         this.currentImage = null;
         this.isLoading = false;
         
-        // WebPサポート確認
-        this.webpSupported = this.checkWebPSupport();
+        // PNGサポート確認（常にtrueとする）
+        this.pngSupported = true;
         
         // AsyncManagerとの統合
         this.asyncManager = null;
@@ -181,7 +181,7 @@ class WebPViewer {
                 
             } else {
                 // フォールバック：従来の方法
-                await this.loadWebPFallback(pageNumber);
+                await this.loadPNGFallback(pageNumber);
             }
             
             this.viewer.updateProgress(100, `✅ ページ ${pageNumber} 表示完了`);
@@ -195,22 +195,22 @@ class WebPViewer {
     }
 
     /**
-     * WebPファイルパスの生成
+     * PNGファイルパスの生成
      */
-    getWebPPath(pageNumber) {
-        // ページ番号を0から始まるインデックスに変換（page-0001 → 0000）
-        const paddedNumber = (pageNumber - 1).toString().padStart(4, '0');
-        return `Webp/d6c92958-05c8-49fb-9b61-3d3128509cfa-${paddedNumber}.webp`;
+    getPNGPath(pageNumber) {
+        // ページ番号をそのまま使用（1から30）
+        const paddedNumber = pageNumber.toString().padStart(2, '0');
+        return `IMG/PNG/school-guide-2026_ページ_${paddedNumber}.png`;
     }
 
     /**
-     * WebP要素の作成
+     * PNG要素の作成
      */
-    async createWebPElement(webpPath, pageNumber) {
+    async createPNGElement(pngPath, pageNumber) {
         const img = document.createElement('img');
-        img.src = webpPath;
+        img.src = pngPath;
         img.alt = `学校案内 ページ ${pageNumber}`;
-        // WebP専用スタイル（5000x3500px対応）
+        // PNG専用スタイル
         img.style.cssText = `
             max-width: 100%;
             max-height: 100%;
@@ -238,29 +238,26 @@ class WebPViewer {
     }
 
     /**
-     * WebPサポート確認
-     */
-    checkWebPSupport() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1;
-        canvas.height = 1;
-        return canvas.toDataURL('image/webp').indexOf('webp') !== -1;
-    }
-
-    /**
      * フォールバック用の従来読み込み方法（AsyncManagerなしの場合）
      */
-    async loadWebPFallback(pageNumber) {
+    async loadPNGFallback(pageNumber) {
         try {
-            console.log(`WebPViewer: フォールバック読み込み page-${pageNumber}`);
+            console.log(`PNGViewer: フォールバック読み込み page-${pageNumber}`);
             
-            // WebP画像の読み込み
-            const webpPath = this.getWebPPath(pageNumber);
-            console.log(`WebPViewer: WebPパス生成: ${webpPath}`);
+            // PNG画像の読み込み
+            const pngPath = this.getPNGPath(pageNumber);
+            console.log(`PNGViewer: PNGパス生成: ${pngPath}`);
             
-            this.viewer.updateProgress(40, 'WebP画像を取得中...');
-            const element = await this.createWebPElement(webpPath, pageNumber);
+            this.viewer.updateProgress(40, 'PNG画像を取得中...');
+            const element = await this.createPNGElement(pngPath, pageNumber);
             this.viewer.updateProgress(90, 'レンダリング中...');
+
+            // lastImageDataを設定（ページ番号付き）
+            this.lastImageData = {
+                img: element,
+                url: webpPath,
+                pageNumber: pageNumber
+            };
 
             // 従来の方式で直接表示
             await this.displayWithCanvasOrFallback(element);
@@ -293,11 +290,19 @@ class WebPViewer {
         if (imageData && imageData.img) {
             // AsyncManagerまたはIndexedDBからのデータ
             img = imageData.img;
+            // Original URLを保持
+            if (!imageData.url && img.src) {
+                imageData.url = this.getPNGPath(pageNumber);
+            }
             this.lastImageData = imageData; // ズーム用に保存
         } else if (imageData instanceof HTMLImageElement) {
             // 従来のelement
             img = imageData;
-            this.lastImageData = imageData; // ズーム用に保存
+            // HTMLImageElementの場合はオブジェクトに変換してURLを保持
+            this.lastImageData = {
+                img: img,
+                url: this.getPNGPath(pageNumber)
+            };
         } else if (imageData && typeof imageData === 'object') {
             // IndexedDBからの復元データの可能性
             console.log('WebPViewer: IndexedDBデータ形式を確認', imageData);
@@ -406,10 +411,10 @@ class WebPViewer {
                 await this.displayWithCanvasOrFallback(imageData.img);
             } catch (error) {
                 console.error('WebPViewer: ネットワーク再読み込み失敗:', error);
-                await this.loadWebPFallback(pageNumber);
+                await this.loadPNGFallback(pageNumber);
             }
         } else {
-            await this.loadWebPFallback(pageNumber);
+            await this.loadPNGFallback(pageNumber);
         }
     }
 
@@ -891,10 +896,13 @@ class WebPViewer {
         const asyncStats = this.asyncManager ? this.asyncManager.getStats() : null;
         
         return {
-            type: 'webp',
-            webpSupported: this.webpSupported,
+            type: 'png',
+            pngSupported: this.pngSupported,
             asyncManager: asyncStats,
             optimization: 'AsyncManager統合済み'
         };
     }
 }
+
+// グローバル参照
+window.PNGViewer = PNGViewer;

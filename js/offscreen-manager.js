@@ -171,6 +171,61 @@ class OffscreenManager {
     }
 
     /**
+     * ImageBitmap を使用した描画（fetch問題回避版）
+     */
+    async renderImageBitmapAsync(imageBitmap, dimensions, renderOptions = {}) {
+        if (!this.isInitialized || !this.worker) {
+            throw new Error('OffscreenManager not initialized');
+        }
+
+        const requestId = this.generateRequestId();
+        const startTime = performance.now();
+        
+        this.stats.totalRequests++;
+
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                this.pendingRequests.delete(requestId);
+                this.stats.failedRequests++;
+                reject(new Error('レンダリングタイムアウト'));
+            }, this.requestTimeout);
+            
+            this.pendingRequests.set(requestId, {
+                resolve: (result) => {
+                    clearTimeout(timeout);
+                    this.updateStats(performance.now() - startTime);
+                    resolve(result);
+                },
+                reject: (error) => {
+                    clearTimeout(timeout);
+                    this.stats.failedRequests++;
+                    reject(error);
+                },
+                type: 'render',
+                timestamp: startTime
+            });
+            
+            // ImageBitmapを直接転送
+            this.worker.postMessage({
+                type: 'render_imagebitmap',
+                data: {
+                    imageBitmap: imageBitmap,
+                    dimensions: dimensions,
+                    renderOptions: {
+                        splitMode: false,
+                        splitSide: 'left',
+                        progressive: true,
+                        quality: 'high-quality',
+                        zoom: 1.0,
+                        ...renderOptions
+                    }
+                },
+                id: requestId
+            }, [imageBitmap]); // Transferable Objects
+        });
+    }
+
+    /**
      * バッチレンダリング
      */
     async renderBatch(renderRequests, progressCallback = null) {
@@ -239,7 +294,9 @@ class OffscreenManager {
                 break;
 
             case 'render_complete':
-                pendingRequest.resolve(data);
+                // dataまたはimageBitmapが含まれている場合を処理
+                const result = data ? data : { imageBitmap: event.data.imageBitmap };
+                pendingRequest.resolve(result);
                 this.pendingRequests.delete(id);
                 this.stats.completedRequests++;
                 break;

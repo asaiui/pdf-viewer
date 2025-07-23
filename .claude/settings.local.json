@@ -19,7 +19,14 @@
       "Bash(cat:*)",
       "Bash(node:*)",
       "Bash(curl:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(brew install:*)",
+      "Bash(magick convert:*)",
+      "Bash(magick:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(brew uninstall:*)",
+      "Bash(brew list:*)"
     ],
     "deny": []
   }

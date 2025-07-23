@@ -142,13 +142,17 @@ class CanvasRenderer {
             let img, imageUrl;
             if (imageData && imageData.img) {
                 img = imageData.img;
-                imageUrl = imageData.url || img.src;
+                // Worker用にoriginalUrlを優先、なければurl、最後にimg.src
+                imageUrl = imageData.originalUrl || imageData.url || img.src;
             } else if (imageData instanceof HTMLImageElement) {
                 img = imageData;
                 imageUrl = img.src;
             } else {
                 throw new Error('Invalid image data');
             }
+            
+            // デバッグ用ログ
+            console.log('CanvasRenderer: imageUrl =', imageUrl);
 
             // Canvas サイズの計算と設定
             const dimensions = this.calculateCanvasDimensions(img, renderOptions);
@@ -185,12 +189,27 @@ class CanvasRenderer {
      */
     async renderWithOffscreen(imageUrl, dimensions, renderOptions) {
         try {
-            const result = await this.offscreenManager.renderImageAsync(imageUrl, dimensions, renderOptions);
+            // メインスレッドでImageBitmapを作成（Worker内でのfetch問題回避）
+            let imageBitmap;
+            try {
+                const response = await fetch(imageUrl);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const blob = await response.blob();
+                imageBitmap = await createImageBitmap(blob);
+            } catch (fetchError) {
+                console.warn('CanvasRenderer: fetch失敗、メインスレッド描画に切り替え', fetchError);
+                throw fetchError; // フォールバックに切り替え
+            }
+            
+            const result = await this.offscreenManager.renderImageBitmapAsync(imageBitmap, dimensions, renderOptions);
             
             // ImageBitmap を メインCanvas に描画
             this.resizeCanvas(dimensions);
             this.ctx.clearRect(0, 0, dimensions.displayWidth, dimensions.displayHeight);
-            this.ctx.drawImage(result.imageBitmap, 0, 0, dimensions.displayWidth, dimensions.displayHeight);
+            
+            // resultがImageBitmapかどうか確認
+            const renderedBitmap = result.imageBitmap || result;
+            this.ctx.drawImage(renderedBitmap, 0, 0, dimensions.displayWidth, dimensions.displayHeight);
             
             const renderTime = performance.now() - this.renderStartTime;
             this.logPerformance('renderWithOffscreen', renderTime, dimensions);
@@ -228,26 +247,51 @@ class CanvasRenderer {
      */
     calculateCanvasDimensions(img, options) {
         const containerWidth = this.viewer.svgContainer.clientWidth || window.innerWidth;
-        const containerHeight = this.viewer.svgContainer.clientHeight || window.innerHeight;
+        // ヘッダー高さ（48px）とコントロール（80px）を考慮
+        const headerHeight = 48;
+        const controlsHeight = 80;
+        const containerHeight = this.viewer.svgContainer.clientHeight || (window.innerHeight - headerHeight - controlsHeight);
         
         // 画像の元サイズ
         const imgWidth = img.naturalWidth || img.width;
         const imgHeight = img.naturalHeight || img.height;
         
-        // アスペクト比の計算
-        const imgAspect = imgWidth / imgHeight;
-        const containerAspect = containerWidth / containerHeight;
-        
         let canvasWidth, canvasHeight;
         
-        if (imgAspect > containerAspect) {
-            // 横長画像: 幅基準
-            canvasWidth = Math.min(containerWidth * options.zoom, this.maxCanvasSize);
-            canvasHeight = canvasWidth / imgAspect;
+        // 分割表示時は元画像の半分の比率を考慮
+        if (options.splitMode) {
+            // 分割表示：画像の半分のアスペクト比を使用
+            const splitImgAspect = (imgWidth / 2) / imgHeight;
+            const containerAspect = containerWidth / containerHeight;
+            
+            // スマホでの適切なズーム倍率を考慮（デフォルト230%相当）
+            const isMobile = window.innerWidth <= 768;
+            const baseZoom = isMobile ? 2.3 : 1.0;
+            const effectiveZoom = options.zoom * baseZoom;
+            
+            if (splitImgAspect > containerAspect) {
+                // 横長の半分画像：幅基準
+                canvasWidth = Math.min(containerWidth * effectiveZoom, this.maxCanvasSize);
+                canvasHeight = canvasWidth / splitImgAspect;
+            } else {
+                // 縦長の半分画像：高さ基準  
+                canvasHeight = Math.min(containerHeight * effectiveZoom, this.maxCanvasSize);
+                canvasWidth = canvasHeight * splitImgAspect;
+            }
         } else {
-            // 縦長画像: 高さ基準
-            canvasHeight = Math.min(containerHeight * options.zoom, this.maxCanvasSize);
-            canvasWidth = canvasHeight * imgAspect;
+            // 通常表示：全画像のアスペクト比を使用
+            const imgAspect = imgWidth / imgHeight;
+            const containerAspect = containerWidth / containerHeight;
+            
+            if (imgAspect > containerAspect) {
+                // 横長画像: 幅基準
+                canvasWidth = Math.min(containerWidth * options.zoom, this.maxCanvasSize);
+                canvasHeight = canvasWidth / imgAspect;
+            } else {
+                // 縦長画像: 高さ基準
+                canvasHeight = Math.min(containerHeight * options.zoom, this.maxCanvasSize);
+                canvasWidth = canvasHeight * imgAspect;
+            }
         }
         
         // Device Pixel Ratio を考慮
@@ -327,24 +371,45 @@ class CanvasRenderer {
     }
 
     /**
-     * 分割表示の描画
+     * 分割表示の描画（縦横比維持）
      */
     async renderSplit(img, options, dimensions) {
         const { imgWidth, imgHeight, displayWidth, displayHeight } = dimensions;
         
+        // 元画像の半分のアスペクト比
+        const splitImgAspect = (imgWidth / 2) / imgHeight;
+        const canvasAspect = displayWidth / displayHeight;
+        
+        // 縦横比を維持した描画サイズの計算
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (splitImgAspect > canvasAspect) {
+            // 横長の半分画像：幅基準でフィット
+            drawWidth = displayWidth;
+            drawHeight = displayWidth / splitImgAspect;
+            offsetX = 0;
+            offsetY = (displayHeight - drawHeight) / 2;
+        } else {
+            // 縦長の半分画像：高さ基準でフィット
+            drawHeight = displayHeight;
+            drawWidth = displayHeight * splitImgAspect;
+            offsetX = (displayWidth - drawWidth) / 2;
+            offsetY = 0;
+        }
+        
         if (options.splitSide === 'left') {
-            // 左半分
+            // 左半分を縦横比を維持して描画
             this.ctx.drawImage(
                 img,
                 0, 0, imgWidth / 2, imgHeight, // ソース：左半分
-                0, 0, displayWidth, displayHeight // デスティネーション：全体
+                offsetX, offsetY, drawWidth, drawHeight // デスティネーション：縦横比維持
             );
         } else {
-            // 右半分
+            // 右半分を縦横比を維持して描画
             this.ctx.drawImage(
                 img,
                 imgWidth / 2, 0, imgWidth / 2, imgHeight, // ソース：右半分
-                0, 0, displayWidth, displayHeight // デスティネーション：全体
+                offsetX, offsetY, drawWidth, drawHeight // デスティネーション：縦横比維持
             );
         }
     }

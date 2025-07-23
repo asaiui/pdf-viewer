@@ -112,8 +112,8 @@ class ISCPDFViewer {
         if (typeof MobileMenu !== 'undefined') {
             this.mobileMenu = new MobileMenu(this);
         }
-        if (typeof WebPViewer !== 'undefined') {
-            this.svgViewer = new WebPViewer(this);
+        if (typeof PNGViewer !== 'undefined') {
+            this.svgViewer = new PNGViewer(this);
         }
         
         // イベントマネージャーの初期化（全イベント一元管理）
@@ -752,15 +752,15 @@ if ('serviceWorker' in navigator) {
 
             // WebPファイルのプリロード通知
             if (registration.active) {
-                const webpFiles = [];
-                for (let i = 0; i < 30; i++) {
-                    const paddedNumber = i.toString().padStart(4, '0');
-                    webpFiles.push(`./Webp/d6c92958-05c8-49fb-9b61-3d3128509cfa-${paddedNumber}.webp`);
+                const pngFiles = [];
+                for (let i = 1; i <= 30; i++) {
+                    const paddedNumber = i.toString().padStart(2, '0');
+                    pngFiles.push(`./IMG/PNG/school-guide-2026_ページ_${paddedNumber}.png`);
                 }
                 
                 registration.active.postMessage({
-                    type: 'PRELOAD_WEBP',
-                    fileList: webpFiles.slice(0, 5) // 最初の5ファイルをプリロード
+                    type: 'PRELOAD_PNG',
+                    fileList: pngFiles.slice(0, 5) // 最初の5ファイルをプリロード
                 });
             }
 

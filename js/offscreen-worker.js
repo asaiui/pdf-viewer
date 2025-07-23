@@ -34,6 +34,10 @@ self.addEventListener('message', async function(e) {
                 await processRenderRequest(data, id);
                 break;
                 
+            case 'render_imagebitmap':
+                await processImageBitmapRenderRequest(data, id);
+                break;
+                
             case 'batch_render':
                 await processBatchRender(data, id);
                 break;
@@ -112,6 +116,38 @@ async function processRenderRequest(renderData, requestId) {
         
     } catch (error) {
         console.error('OffscreenWorker: レンダリングエラー:', error);
+        postMessage({ 
+            type: 'render_error', 
+            error: error.message, 
+            id: requestId 
+        });
+    }
+}
+
+/**
+ * ImageBitmap を使用したレンダリング処理（fetch問題回避版）
+ */
+async function processImageBitmapRenderRequest(data, requestId) {
+    const startTime = performance.now();
+    
+    try {
+        // ImageBitmapを直接使用してレンダリング
+        const result = await renderImageBitmap(data);
+        
+        const renderTime = performance.now() - startTime;
+        
+        // 結果を返す（ImageBitmapはTransferable）
+        postMessage({ 
+            type: 'render_complete', 
+            imageBitmap: result,
+            id: requestId,
+            renderTime: renderTime
+        }, [result]);
+        
+        console.log(`OffscreenWorker: ImageBitmapレンダリング完了 ${renderTime.toFixed(2)}ms`);
+        
+    } catch (error) {
+        console.error('OffscreenWorker: ImageBitmapレンダリングエラー:', error);
         postMessage({ 
             type: 'render_error', 
             error: error.message, 
@@ -358,5 +394,101 @@ self.addEventListener('unhandledrejection', function(e) {
         reason: e.reason.toString()
     });
 });
+
+/**
+ * ImageBitmap を直接使用したレンダリング（fetch不要版）
+ */
+async function renderImageBitmap(renderData) {
+    const {
+        imageBitmap,
+        dimensions,
+        renderOptions
+    } = renderData;
+    
+    // Canvas サイズの設定
+    offscreenCanvas.width = dimensions.canvasWidth;
+    offscreenCanvas.height = dimensions.canvasHeight;
+    
+    // 既に作成済みのImageBitmapを使用（fetch不要）
+    
+    // 背景クリア
+    ctx.clearRect(0, 0, dimensions.canvasWidth, dimensions.canvasHeight);
+    
+    // レンダリング品質の設定
+    setRenderingQuality(renderOptions.quality);
+    
+    // 分割表示の処理（縦横比維持）
+    if (renderOptions.splitMode) {
+        const sourceWidth = imageBitmap.width;
+        const sourceHeight = imageBitmap.height;
+        
+        // 元画像の半分のアスペクト比
+        const splitImgAspect = (sourceWidth / 2) / sourceHeight;
+        const canvasAspect = dimensions.canvasWidth / dimensions.canvasHeight;
+        
+        // 縦横比を維持した描画サイズの計算
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (splitImgAspect > canvasAspect) {
+            // 横長の半分画像：幅基準でフィット
+            drawWidth = dimensions.canvasWidth;
+            drawHeight = dimensions.canvasWidth / splitImgAspect;
+            offsetX = 0;
+            offsetY = (dimensions.canvasHeight - drawHeight) / 2;
+        } else {
+            // 縦長の半分画像：高さ基準でフィット
+            drawHeight = dimensions.canvasHeight;
+            drawWidth = dimensions.canvasHeight * splitImgAspect;
+            offsetX = (dimensions.canvasWidth - drawWidth) / 2;
+            offsetY = 0;
+        }
+        
+        // 分割描画
+        if (renderOptions.splitSide === 'left') {
+            // 左半分を縦横比を維持して描画
+            ctx.drawImage(
+                imageBitmap,
+                0, 0, sourceWidth / 2, sourceHeight, // ソース：左半分
+                offsetX, offsetY, drawWidth, drawHeight // デスティネーション：縦横比維持
+            );
+        } else {
+            // 右半分を縦横比を維持して描画
+            ctx.drawImage(
+                imageBitmap,
+                sourceWidth / 2, 0, sourceWidth / 2, sourceHeight, // ソース：右半分
+                offsetX, offsetY, drawWidth, drawHeight // デスティネーション：縦横比維持
+            );
+        }
+    } else {
+        // 通常表示
+        const sourceWidth = imageBitmap.width;
+        const sourceHeight = imageBitmap.height;
+        
+        // アスペクト比を維持しながら描画
+        const aspectRatio = sourceWidth / sourceHeight;
+        const targetAspectRatio = dimensions.canvasWidth / dimensions.canvasHeight;
+        
+        let drawWidth, drawHeight, drawX, drawY;
+        
+        if (aspectRatio > targetAspectRatio) {
+            // 横長画像：幅をキャンバスに合わせる
+            drawWidth = dimensions.canvasWidth;
+            drawHeight = dimensions.canvasWidth / aspectRatio;
+            drawX = 0;
+            drawY = (dimensions.canvasHeight - drawHeight) / 2;
+        } else {
+            // 縦長画像：高さをキャンバスに合わせる
+            drawHeight = dimensions.canvasHeight;
+            drawWidth = dimensions.canvasHeight * aspectRatio;
+            drawX = (dimensions.canvasWidth - drawWidth) / 2;
+            drawY = 0;
+        }
+        
+        ctx.drawImage(imageBitmap, drawX, drawY, drawWidth, drawHeight);
+    }
+    
+    // レンダリング結果をImageBitmapとして返す
+    return await createImageBitmap(offscreenCanvas);
+}
 
 console.log('OffscreenWorker: 初期化完了');

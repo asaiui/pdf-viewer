@@ -316,8 +316,8 @@ body {
     overflow: auto;
     position: relative;
     padding: 0;
-    height: calc(100vh - 68px);
-    min-height: calc(100vh - 68px);
+    height: calc(100vh - 48px);
+    min-height: calc(100vh - 48px);
 }
 
 .pdf-canvas {
@@ -1411,8 +1411,8 @@ body {
         width: 280px;
         left: -280px;
         position: fixed;
-        top: 68px;
-        height: calc(100vh - 68px);
+        top: 48px;
+        height: calc(100vh - 48px);
         z-index: 200;
         box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1574,8 +1574,8 @@ body {
     }
 
     .sidebar {
-        top: 56px;
-        height: calc(100vh - 56px);
+        top: 48px;
+        height: calc(100vh - 48px);
     }
 
     .pdf-viewer-container .controls {
@@ -1826,7 +1826,7 @@ body {
         align-items: center;
         justify-content: center;
         flex: 1;
-        min-height: calc(100vh - 125px);
+        min-height: calc(100vh - 110px);
     }
 
     #svgContainer svg {
@@ -1862,7 +1862,7 @@ body {
     /* SVGコンテナのモバイル最適化 */
     #svgContainer {
         padding: 8px;
-        min-height: calc(100vh - 140px);
+        min-height: calc(100vh - 120px);
         display: flex;
         align-items: center;
         justify-content: center;

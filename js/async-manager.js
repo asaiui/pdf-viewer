@@ -336,8 +336,8 @@ class AsyncManager {
      */
     async executeImageLoad(request) {
         const { pageNumber } = request;
-        const pageStr = (pageNumber - 1).toString().padStart(4, '0'); // 1ページ目 → 0000
-        const imageUrl = `Webp/d6c92958-05c8-49fb-9b61-3d3128509cfa-${pageStr}.webp`;
+        const pageStr = pageNumber.toString().padStart(2, '0'); // 1ページ目 → 01
+        const imageUrl = `IMG/PNG/school-guide-2026_ページ_${pageStr}.png`;
         
         // Fetch with timeout
         const controller = new AbortController();
@@ -368,6 +368,7 @@ class AsyncManager {
                     this.addToCache(`page-${pageNumber}`, {
                         img,
                         url: imageUrl_blob,
+                        originalUrl: imageUrl, // 元のHTTPパスを保持
                         timestamp: Date.now(),
                         size: blob.size
                     });
@@ -375,6 +376,7 @@ class AsyncManager {
                     resolve({
                         img,
                         url: imageUrl_blob,
+                        originalUrl: imageUrl, // Worker用の元のHTTPパス
                         pageNumber,
                         size: blob.size
                     });
