@@ -37,10 +37,10 @@
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- SVGファイルのプリロード -->
-    <link rel="prefetch" href="SVG/page-0001.svg">
-    <link rel="prefetch" href="SVG/page-0002.svg">
-    <link rel="prefetch" href="SVG/page-0003.svg">
+    <!-- WebPファイルのプリロード -->
+    <link rel="prefetch" href="Webp/d6c92958-05c8-49fb-9b61-3d3128509cfa-0000.webp">
+    <link rel="prefetch" href="Webp/d6c92958-05c8-49fb-9b61-3d3128509cfa-0001.webp">
+    <link rel="prefetch" href="Webp/d6c92958-05c8-49fb-9b61-3d3128509cfa-0002.webp">
     
     <!-- PWA対応 -->
     <link rel="manifest" href="manifest.json">
@@ -296,6 +296,10 @@
                 </div>
                 <div id="svgContainer" class="svg-container" style="display: none;" role="img" aria-label="学校案内ページ"></div>
                 <div class="zoom-level-indicator" id="zoomLevelIndicator" aria-live="polite">100%</div>
+                <div class="split-indicator" id="splitIndicator" style="display: none;" aria-live="polite">
+                    <span class="split-text">左側表示</span>
+                    <span class="split-toggle" id="splitToggle" role="button" tabindex="0" aria-label="左右切り替え">⇄</span>
+                </div>
             </div>
 
             <!-- 全画面時のコントロール -->
@@ -334,12 +338,14 @@
                     <button class="zoom-btn" id="zoomInBtn" aria-label="拡大" title="拡大 (+)">＋</button>
                     <button class="zoom-btn" id="fitWidthBtn" aria-label="幅に合わせる" title="幅に合わせる (W)">幅調整</button>
                     <button class="zoom-btn" id="fitPageBtn" aria-label="ページに合わせる" title="全体表示 (F)">全体</button>
+                    <button class="zoom-btn split-btn" id="splitBtn" aria-label="分割表示" title="分割表示 (S)">分割</button>
                     <button class="zoom-btn fullscreen-btn" id="fullscreenBtn" aria-label="全画面表示" title="全画面表示 (F11)">⛶</button>
                 </div>
             </div>
 
             <!-- ステータスバー -->
             <div class="status-bar" role="status" aria-label="ステータス情報">
+                <div class="load-status" id="loadStatus">📄 WebPビューアー準備中...</div>
             </div>
         </main>
     </div>
@@ -399,10 +405,17 @@
     <script src="js/fullscreen-manager.js"></script>
     <script src="js/content-analyzer.js"></script>
     <script src="js/mobile-menu.js"></script>
-    <script src="js/mobile-touch-handler.js"></script>
+    <script src="js/dom-cache.js"></script>
+    <script src="js/event-manager.js"></script>
+    <script src="js/async-manager.js"></script>
+    <script src="js/unified-touch-handler.js"></script>
+    <script src="js/performance-monitor.js"></script>
     <script src="js/mobile-ui-optimizer.js"></script>
-    <script src="js/touch-gesture-manager.js"></script>
     <script src="js/responsive-layout-manager.js"></script>
+    <script src="js/offscreen-manager.js"></script>
+    <script src="js/canvas-renderer.js"></script>
+    <script src="js/progressive-loader.js"></script>
+    <script src="js/indexeddb-manager.js"></script>
     <script src="js/webp-viewer.js"></script>
     <script src="js/main.js"></script>
 </body>

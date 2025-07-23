@@ -23,10 +23,9 @@ The application follows a modular architecture with a main controller class coor
 - **FullscreenManager** (fullscreen-manager.js) - Handles fullscreen mode and related controls
 - **MobileMenu** (mobile-menu.js) - Enhanced mobile navigation with swipe gestures and focus trap
 - **MobileUIOptimizer** (mobile-ui-optimizer.js) - Mobile-specific UI optimizations
-- **MobileTouchHandler** (mobile-touch-handler.js) - Touch interaction handling
 
 ### Responsive & Touch
-- **TouchGestureManager** (touch-gesture-manager.js) - Touch and swipe gesture handling
+- **UnifiedTouchHandler** (unified-touch-handler.js) - Consolidated touch and swipe gesture handling
 - **ResponsiveLayoutManager** (responsive-layout-manager.js) - Adaptive layout management
 
 ### Analytics & Content
@@ -77,8 +76,8 @@ Since this is a frontend-only application with no build process:
   - `svg-viewer.js` - SVG rendering and caching system
   - `cdn-manager.js` - External library loading management
   - `config.js` - Application configuration
-  - Mobile-specific modules: mobile-menu.js, mobile-ui-optimizer.js, mobile-touch-handler.js
-  - Touch & responsive: touch-gesture-manager.js, responsive-layout-manager.js
+  - Mobile-specific modules: mobile-menu.js, mobile-ui-optimizer.js
+  - Touch & responsive: unified-touch-handler.js, responsive-layout-manager.js
   - UI components: fullscreen-manager.js, content-analyzer.js
 - `SVG/` - SVG files with naming pattern `page-NNNN.svg` (30 files, pages 0001-0030)
 - `pdf/` - PDF files (`test.pdf`, `school-guide-2026.pdf`)
@@ -90,8 +89,9 @@ Since this is a frontend-only application with no build process:
 ## Important Implementation Details
 
 ### Current Implementation Status
-The application primarily operates in **SVG Mode**:
-- **SVG Mode**: Primary and currently implemented mode using optimized SVG files from `SVG/` directory
+The application primarily operates in **WebP Mode**:
+- **WebP Mode**: Primary and optimized mode using WebP image files with AsyncManager integration
+- **SVG Mode**: Legacy mode using SVG files (deprecated in favor of WebP)
 - **PDF Mode**: Referenced in code but not fully implemented (PDF.js integration incomplete)
 - **Demo Mode**: Fallback content available in `Demo/` directory with book-flip effect
 

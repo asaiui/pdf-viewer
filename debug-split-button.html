@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分割ボタンデバッグ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-panel">
+        <h1>🔍 分割ボタンデバッグツール</h1>
+        <p>この画面では分割ボタンが動作しない問題を調査します。</p>
+        
+        <div class="status info" id="status">
+            🔄 デバッグを開始しています...
+        </div>
+
+        <button onclick="runDiagnostics()">🔍 診断実行</button>
+        <button onclick="testSplitButton()">🧪 分割ボタンテスト</button>
+        <button onclick="checkEventListeners()">👂 イベントリスナー確認</button>
+        <button onclick="clearLog()">🗑️ ログクリア</button>
+    </div>
+
+    <div class="debug-panel">
+        <h2>📋 診断ログ</h2>
+        <pre id="debugLog">診断ログがここに表示されます...</pre>
+    </div>
+
+    <script>
+        let log = [];
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            log.push(`[${timestamp}] ${message}`);
+            updateLogDisplay();
+            
+            // ステータス更新
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        function updateLogDisplay() {
+            document.getElementById('debugLog').textContent = log.join('\n');
+        }
+        
+        function clearLog() {
+            log = [];
+            updateLogDisplay();
+            addLog('ログがクリアされました', 'info');
+        }
+        
+        function runDiagnostics() {
+            addLog('=== 分割ボタン診断開始 ===', 'info');
+            
+            // 1. メインアプリケーションの存在確認
+            const checkMainApp = () => {
+                if (window.opener) {
+                    const mainWindow = window.opener;
+                    addLog('✅ メインウィンドウが見つかりました', 'success');
+                    
+                    // ISCPDFViewerインスタンスの確認
+                    if (mainWindow.document.querySelector('.container')) {
+                        addLog('✅ PDFビューアーコンテナが存在します', 'success');
+                        
+                        // 分割ボタンの存在確認
+                        const splitBtn = mainWindow.document.getElementById('splitBtn');
+                        if (splitBtn) {
+                            addLog('✅ 分割ボタンが見つかりました', 'success');
+                            addLog(`ボタンテキスト: "${splitBtn.textContent}"`, 'info');
+                            addLog(`ボタンクラス: "${splitBtn.className}"`, 'info');
+                            
+                            // イベントリスナーの確認
+                            checkButtonEventListeners(splitBtn);
+                            
+                        } else {
+                            addLog('❌ 分割ボタンが見つかりません', 'error');
+                        }
+                        
+                        // WebPViewerの確認
+                        checkWebPViewer(mainWindow);
+                        
+                    } else {
+                        addLog('❌ PDFビューアーコンテナが見つかりません', 'error');
+                    }
+                } else {
+                    addLog('❌ メインウィンドウにアクセスできません', 'error');
+                    addLog('このツールはメインアプリケーションから開いてください', 'warning');
+                }
+            };
+            
+            checkMainApp();
+        }
+        
+        function checkButtonEventListeners(button) {
+            // イベントリスナーの存在確認（限定的）
+            addLog('🔍 イベントリスナーを確認中...', 'info');
+            
+            // onclick属性の確認
+            if (button.onclick) {
+                addLog('✅ onclick属性が設定されています', 'success');
+            } else {
+                addLog('⚠️ onclick属性が設定されていません', 'warning');
+            }
+            
+            // addEventListenerで追加されたリスナーは直接確認できないため、テストクリックを実行
+            addLog('🧪 テストクリックを実行します...', 'info');
+        }
+        
+        function checkWebPViewer(mainWindow) {
+            try {
+                // グローバル変数やプロパティから WebPViewer を探す
+                addLog('🔍 WebPViewerインスタンスを確認中...', 'info');
+                
+                // 様々な方法でWebPViewerにアクセス
+                let webpViewer = null;
+                
+                if (mainWindow.viewer && mainWindow.viewer.svgViewer) {
+                    webpViewer = mainWindow.viewer.svgViewer;
+                    addLog('✅ viewer.svgViewer経由でWebPViewerが見つかりました', 'success');
+                } else {
+                    addLog('❌ WebPViewerインスタンスが見つかりません', 'error');
+                    return;
+                }
+                
+                // WebPViewerのメソッド確認
+                if (webpViewer.toggleSplitMode) {
+                    addLog('✅ toggleSplitMode メソッドが存在します', 'success');
+                } else {
+                    addLog('❌ toggleSplitMode メソッドが存在しません', 'error');
+                }
+                
+                // 分割モードの状態確認
+                addLog(`分割モード状態: ${webpViewer.splitMode || false}`, 'info');
+                addLog(`分割サイド: ${webpViewer.splitSide || 'left'}`, 'info');
+                
+            } catch (error) {
+                addLog(`❌ WebPViewer確認中にエラー: ${error.message}`, 'error');
+            }
+        }
+        
+        function testSplitButton() {
+            addLog('=== 分割ボタンテスト開始 ===', 'info');
+            
+            if (window.opener) {
+                const mainWindow = window.opener;
+                const splitBtn = mainWindow.document.getElementById('splitBtn');
+                
+                if (splitBtn) {
+                    addLog('🧪 分割ボタンのクリックをシミュレート', 'info');
+                    
+                    // コンソールにリスナーを追加してクリックイベントをキャッチ
+                    const originalConsoleLog = mainWindow.console.log;
+                    mainWindow.console.log = function(...args) {
+                        if (args[0] && args[0].toString().includes('Split')) {
+                            addLog(`📝 コンソールログ: ${args.join(' ')}`, 'info');
+                        }
+                        originalConsoleLog.apply(this, args);
+                    };
+                    
+                    // クリックイベントを発火
+                    splitBtn.click();
+                    
+                    setTimeout(() => {
+                        mainWindow.console.log = originalConsoleLog;
+                        addLog('✅ テストクリック完了', 'success');
+                    }, 500);
+                    
+                } else {
+                    addLog('❌ 分割ボタンが見つからないため、テストできません', 'error');
+                }
+            } else {
+                addLog('❌ メインウィンドウにアクセスできません', 'error');
+            }
+        }
+        
+        function checkEventListeners() {
+            addLog('=== イベントリスナー詳細確認 ===', 'info');
+            
+            if (window.opener) {
+                const mainWindow = window.opener;
+                
+                // EventManagerの状態確認
+                if (mainWindow.viewer && mainWindow.viewer.eventManager) {
+                    addLog('✅ EventManagerが見つかりました', 'success');
+                    const stats = mainWindow.viewer.eventManager.getStats();
+                    addLog(`EventManager統計: ${JSON.stringify(stats, null, 2)}`, 'info');
+                } else {
+                    addLog('⚠️ EventManagerが見つかりません', 'warning');
+                }
+                
+                // 手動でイベントリスナーの設定を確認
+                const splitBtn = mainWindow.document.getElementById('splitBtn');
+                if (splitBtn) {
+                    // DOM要素のイベント確認
+                    addLog('🔍 DOM要素のプロパティ確認:', 'info');
+                    addLog(`disabled: ${splitBtn.disabled}`, 'info');
+                    addLog(`style.display: ${splitBtn.style.display}`, 'info');
+                    addLog(`offsetParent: ${splitBtn.offsetParent ? '表示中' : '非表示'}`, 'info');
+                }
+            }
+        }
+        
+        // 初回実行
+        window.addEventListener('load', () => {
+            addLog('🚀 分割ボタンデバッグツールが起動しました', 'success');
+            setTimeout(runDiagnostics, 1000);
+        });
+        
+        // メインウィンドウからメッセージを受け取る
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'debug') {
+                addLog(`📨 メインアプリケーション: ${event.data.message}`, 'info');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最適化テスト - PDFビューア</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5;
+        }
+        .test-container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result { 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 4px; 
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 4px; 
+            overflow-x: auto;
+        }
+        button {
+            background: #0066CC;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0052A3; }
+    </style>
+</head>
+<body>
+    <h1>📊 PDFビューア最適化テスト</h1>
+    
+    <div class="test-container">
+        <h2>🔧 基本機能テスト</h2>
+        <button onclick="runBasicTests()">基本テスト実行</button>
+        <div id="basic-results"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>⚡ AsyncManager統合テスト</h2>
+        <button onclick="runAsyncManagerTests()">AsyncManager テスト実行</button>
+        <div id="async-results"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🧠 メモリリークテスト</h2>
+        <button onclick="runMemoryTests()">メモリテスト実行</button>
+        <div id="memory-results"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🔄 Worker機能テスト</h2>
+        <button onclick="runWorkerTests()">Worker テスト実行</button>
+        <div id="worker-results"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>📈 パフォーマンス統計</h2>
+        <button onclick="showPerformanceStats()">統計表示</button>
+        <div id="performance-stats"></div>
+    </div>
+
+    <!-- 必要なスクリプトファイルを読み込み -->
+    <script src="js/config.js"></script>
+    <script src="js/dom-cache.js"></script>
+    <script src="js/async-manager.js"></script>
+    <script src="js/webp-viewer.js"></script>
+    <script src="js/performance-monitor.js"></script>
+
+    <script>
+        // テスト結果表示用ユーティリティ
+        function logResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            container.appendChild(div);
+        }
+        
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        // 基本機能テスト
+        async function runBasicTests() {
+            clearResults('basic-results');
+            logResult('basic-results', '🧪 基本機能テストを開始...', 'info');
+            
+            try {
+                // 1. クラスの存在確認
+                if (typeof AsyncManager !== 'undefined') {
+                    logResult('basic-results', '✅ AsyncManager クラス存在確認: OK', 'pass');
+                } else {
+                    logResult('basic-results', '❌ AsyncManager クラスが見つかりません', 'fail');
+                }
+                
+                if (typeof WebPViewer !== 'undefined') {
+                    logResult('basic-results', '✅ WebPViewer クラス存在確認: OK', 'pass');
+                } else {
+                    logResult('basic-results', '❌ WebPViewer クラスが見つかりません', 'fail');
+                }
+                
+                if (typeof PerformanceMonitor !== 'undefined') {
+                    logResult('basic-results', '✅ PerformanceMonitor クラス存在確認: OK', 'pass');
+                } else {
+                    logResult('basic-results', '❌ PerformanceMonitor クラスが見つかりません', 'fail');
+                }
+                
+                // 2. DOMキャッシュテスト
+                if (window.domCache) {
+                    logResult('basic-results', '✅ DOMキャッシュシステム: 利用可能', 'pass');
+                    const stats = window.domCache.getStats();
+                    logResult('basic-results', `📊 キャッシュサイズ: ${stats.cacheSize}件`, 'info');
+                } else {
+                    logResult('basic-results', '⚠️ DOMキャッシュシステム: 未初期化', 'warning');
+                }
+                
+                // 3. Worker サポート確認
+                if (typeof Worker !== 'undefined') {
+                    logResult('basic-results', '✅ Web Workers: サポートあり', 'pass');
+                } else {
+                    logResult('basic-results', '⚠️ Web Workers: サポートなし', 'warning');
+                }
+                
+                // 4. メモリ情報確認
+                if (performance.memory) {
+                    const memory = performance.memory;
+                    const used = Math.round(memory.usedJSHeapSize / 1024 / 1024);
+                    const total = Math.round(memory.totalJSHeapSize / 1024 / 1024);
+                    logResult('basic-results', `💾 メモリ使用量: ${used}MB / ${total}MB`, 'info');
+                } else {
+                    logResult('basic-results', '⚠️ メモリ情報: 取得不可', 'warning');
+                }
+                
+                logResult('basic-results', '✅ 基本機能テスト完了', 'pass');
+                
+            } catch (error) {
+                logResult('basic-results', `❌ 基本テストエラー: ${error.message}`, 'fail');
+            }
+        }
+
+        // AsyncManagerテスト
+        async function runAsyncManagerTests() {
+            clearResults('async-results');
+            logResult('async-results', '🧪 AsyncManager統合テストを開始...', 'info');
+            
+            try {
+                // MockViewerを作成
+                const mockViewer = {
+                    totalPages: 30,
+                    updateProgress: (percent, text) => {
+                        logResult('async-results', `📊 進捗: ${percent}% - ${text}`, 'info');
+                    }
+                };
+                
+                // AsyncManagerインスタンス作成
+                const asyncManager = new AsyncManager(mockViewer);
+                await new Promise(resolve => setTimeout(resolve, 100)); // 初期化待ち
+                
+                logResult('async-results', '✅ AsyncManager インスタンス作成: OK', 'pass');
+                
+                // 統計情報取得テスト
+                const stats = asyncManager.getStats();
+                logResult('async-results', `📈 統計情報取得: OK`, 'pass');
+                logResult('async-results', `<pre>${JSON.stringify(stats, null, 2)}</pre>`, 'info');
+                
+                // キャッシュテスト（モック画像データ）
+                const mockImageData = {
+                    img: new Image(),
+                    url: 'blob:mock-url',
+                    pageNumber: 1,
+                    size: 1024
+                };
+                
+                asyncManager.addToCache('page-1', mockImageData);
+                logResult('async-results', '✅ キャッシュ追加テスト: OK', 'pass');
+                
+                // LRU削除テスト
+                const targetKey = asyncManager.selectEvictionTarget();
+                if (targetKey) {
+                    logResult('async-results', `✅ LRU削除対象選択: ${targetKey}`, 'pass');
+                } else {
+                    logResult('async-results', '⚠️ LRU削除対象: 空のキャッシュ', 'warning');
+                }
+                
+                // Worker機能テスト
+                if (asyncManager.workers.length > 0) {
+                    logResult('async-results', `✅ Workers初期化: ${asyncManager.workers.length}個`, 'pass');
+                    
+                    // キャッシュ最適化テスト
+                    await asyncManager.optimizeCacheInWorker();
+                    logResult('async-results', '✅ Worker キャッシュ最適化: 開始', 'pass');
+                } else {
+                    logResult('async-results', '⚠️ Workers: 利用不可またはエラー', 'warning');
+                }
+                
+                // クリーンアップテスト
+                asyncManager.cleanup();
+                logResult('async-results', '✅ AsyncManager クリーンアップ: OK', 'pass');
+                
+                logResult('async-results', '✅ AsyncManager統合テスト完了', 'pass');
+                
+            } catch (error) {
+                logResult('async-results', `❌ AsyncManagerテストエラー: ${error.message}`, 'fail');
+                console.error(error);
+            }
+        }
+
+        // メモリリークテスト
+        async function runMemoryTests() {
+            clearResults('memory-results');
+            logResult('memory-results', '🧪 メモリリークテストを開始...', 'info');
+            
+            if (!performance.memory) {
+                logResult('memory-results', '⚠️ メモリ情報が取得できません（Chrome以外）', 'warning');
+                return;
+            }
+            
+            try {
+                const initialMemory = performance.memory.usedJSHeapSize;
+                logResult('memory-results', `📊 初期メモリ: ${Math.round(initialMemory/1024/1024)}MB`, 'info');
+                
+                // 大量のAsyncManagerインスタンスを作成・破棄
+                const instances = [];
+                const mockViewer = { 
+                    totalPages: 30, 
+                    updateProgress: () => {} 
+                };
+                
+                // インスタンス大量作成
+                for (let i = 0; i < 10; i++) {
+                    instances.push(new AsyncManager(mockViewer));
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const peakMemory = performance.memory.usedJSHeapSize;
+                logResult('memory-results', `📊 ピークメモリ: ${Math.round(peakMemory/1024/1024)}MB`, 'info');
+                
+                // 全インスタンスをクリーンアップ
+                instances.forEach(instance => instance.cleanup());
+                instances.length = 0;
+                
+                // ガベージコレクション強制実行を試行
+                if (window.gc) {
+                    window.gc();
+                } else {
+                    // 代替：大量の一時オブジェクト作成でGCを促す
+                    for (let i = 0; i < 100000; i++) {
+                        const temp = { data: new Array(100) };
+                    }
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                const finalMemory = performance.memory.usedJSHeapSize;
+                logResult('memory-results', `📊 最終メモリ: ${Math.round(finalMemory/1024/1024)}MB`, 'info');
+                
+                const memoryIncrease = finalMemory - initialMemory;
+                const increaseRate = (memoryIncrease / initialMemory) * 100;
+                
+                if (increaseRate < 10) {
+                    logResult('memory-results', `✅ メモリリーク: 正常 (+${increaseRate.toFixed(1)}%)`, 'pass');
+                } else if (increaseRate < 25) {
+                    logResult('memory-results', `⚠️ メモリリーク: 軽微 (+${increaseRate.toFixed(1)}%)`, 'warning');
+                } else {
+                    logResult('memory-results', `❌ メモリリーク: 深刻 (+${increaseRate.toFixed(1)}%)`, 'fail');
+                }
+                
+                logResult('memory-results', '✅ メモリリークテスト完了', 'pass');
+                
+            } catch (error) {
+                logResult('memory-results', `❌ メモリテストエラー: ${error.message}`, 'fail');
+            }
+        }
+
+        // Workerテスト
+        async function runWorkerTests() {
+            clearResults('worker-results');
+            logResult('worker-results', '🧪 Worker機能テストを開始...', 'info');
+            
+            try {
+                const mockViewer = { totalPages: 30, updateProgress: () => {} };
+                const asyncManager = new AsyncManager(mockViewer);
+                
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                if (asyncManager.workers.length === 0) {
+                    logResult('worker-results', '⚠️ Workersが利用できません', 'warning');
+                    return;
+                }
+                
+                logResult('worker-results', `✅ Workers初期化: ${asyncManager.workers.length}個`, 'pass');
+                
+                // 画像処理テスト
+                try {
+                    const imageData = { width: 1920, height: 1080, quality: 0.8 };
+                    const result = await asyncManager.processImageInWorker(imageData);
+                    logResult('worker-results', '✅ Worker 画像処理: OK', 'pass');
+                    logResult('worker-results', `📊 最適化結果: ${JSON.stringify(result, null, 2)}`, 'info');
+                } catch (workerError) {
+                    logResult('worker-results', `⚠️ Worker 画像処理: ${workerError.message}`, 'warning');
+                }
+                
+                // バッチ処理テスト
+                try {
+                    const operations = [
+                        { type: 'imageSize', width: 1920, height: 1080 },
+                        { type: 'imageSize', width: 800, height: 600 }
+                    ];
+                    const batchResult = await asyncManager.processBatchInWorker(operations);
+                    logResult('worker-results', '✅ Worker バッチ処理: OK', 'pass');
+                } catch (batchError) {
+                    logResult('worker-results', `⚠️ Worker バッチ処理: ${batchError.message}`, 'warning');
+                }
+                
+                asyncManager.cleanup();
+                logResult('worker-results', '✅ Worker機能テスト完了', 'pass');
+                
+            } catch (error) {
+                logResult('worker-results', `❌ Workerテストエラー: ${error.message}`, 'fail');
+            }
+        }
+
+        // パフォーマンス統計表示
+        function showPerformanceStats() {
+            clearResults('performance-stats');
+            logResult('performance-stats', '📈 パフォーマンス統計を収集中...', 'info');
+            
+            try {
+                // ブラウザ情報
+                const userAgent = navigator.userAgent;
+                const browser = userAgent.includes('Chrome') ? 'Chrome' :
+                               userAgent.includes('Firefox') ? 'Firefox' :
+                               userAgent.includes('Safari') ? 'Safari' : 'Unknown';
+                               
+                logResult('performance-stats', `🌐 ブラウザ: ${browser}`, 'info');
+                
+                // デバイス情報
+                logResult('performance-stats', `📱 デバイス: ${navigator.platform}`, 'info');
+                logResult('performance-stats', `⚡ CPU コア数: ${navigator.hardwareConcurrency || 'unknown'}`, 'info');
+                
+                // メモリ情報
+                if (performance.memory) {
+                    const memory = performance.memory;
+                    logResult('performance-stats', `💾 使用中メモリ: ${Math.round(memory.usedJSHeapSize/1024/1024)}MB`, 'info');
+                    logResult('performance-stats', `💾 制限メモリ: ${Math.round(memory.jsHeapSizeLimit/1024/1024)}MB`, 'info');
+                    logResult('performance-stats', `💾 使用率: ${Math.round(memory.usedJSHeapSize/memory.jsHeapSizeLimit*100)}%`, 'info');
+                }
+                
+                // パフォーマンスタイミング
+                const timing = performance.timing;
+                if (timing) {
+                    const loadTime = timing.loadEventEnd - timing.navigationStart;
+                    logResult('performance-stats', `⏱️ ページ読み込み時間: ${loadTime}ms`, 'info');
+                    
+                    const domTime = timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart;
+                    logResult('performance-stats', `🏗️ DOM構築時間: ${domTime}ms`, 'info');
+                }
+                
+                // 最適化効果の推定
+                if (window.performanceMonitor) {
+                    const impact = window.performanceMonitor.measureOptimizationImpact();
+                    logResult('performance-stats', '<h3>🚀 最適化効果:</h3>', 'info');
+                    Object.entries(impact).forEach(([key, data]) => {
+                        logResult('performance-stats', `<strong>${data.description}</strong><br>✅ ${data.improvement}`, 'pass');
+                    });
+                }
+                
+                logResult('performance-stats', '✅ パフォーマンス統計表示完了', 'pass');
+                
+            } catch (error) {
+                logResult('performance-stats', `❌ 統計取得エラー: ${error.message}`, 'fail');
+            }
+        }
+
+        // ページロード時に基本情報を表示
+        window.addEventListener('load', () => {
+            console.log('🧪 PDFビューア最適化テストページが読み込まれました');
+            console.log('📝 利用可能なテスト関数: runBasicTests, runAsyncManagerTests, runMemoryTests, runWorkerTests');
+        });
+    </script>
+</body>
+</html>

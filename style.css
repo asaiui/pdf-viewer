@@ -2033,3 +2033,258 @@ body {
         text-align: center;
     }
 }
+
+/* ==============================================
+   WebPモード専用スタイル（5000x3500px対応）
+   ============================================== */
+
+/* WebPコンテナの基本スタイル */
+.webp-mode {
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* デスクトップでのWebP表示最適化 */
+@media (min-width: 1024px) {
+    .webp-mode {
+        padding: 24px;
+        margin: 16px;
+        max-width: calc(100vw - 320px); /* サイドバー分を除く */
+        min-height: calc(100vh - 120px);
+    }
+    
+    .webp-mode img {
+        cursor: zoom-in;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .webp-mode img:hover {
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* タブレットでのWebP表示 */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .webp-mode {
+        padding: 16px;
+        margin: 12px;
+        max-width: calc(100vw - 280px);
+        min-height: calc(100vh - 100px);
+    }
+    
+    .webp-mode img {
+        max-width: calc(100vw - 320px);
+        max-height: calc(100vh - 140px);
+    }
+}
+
+/* モバイルでのWebP表示最適化 */
+@media (max-width: 768px) {
+    .webp-mode {
+        padding: 12px;
+        margin: 8px;
+        border-radius: 6px;
+        min-height: calc(100vh - 160px);
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .webp-mode img {
+        max-width: calc(100vw - 32px) !important;
+        max-height: calc(100vh - 200px) !important;
+        width: auto !important;
+        height: auto !important;
+        border-radius: 4px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* 小型スマホでの追加最適化 */
+@media (max-width: 480px) {
+    .webp-mode {
+        padding: 8px;
+        margin: 4px;
+        min-height: calc(100vh - 180px);
+        max-height: calc(100vh - 180px);
+    }
+    
+    .webp-mode img {
+        max-width: calc(100vw - 24px) !important;
+        max-height: calc(100vh - 220px) !important;
+        border-radius: 3px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* 横向き表示での調整 */
+@media (orientation: landscape) and (max-width: 768px) {
+    .webp-mode {
+        min-height: calc(100vh - 120px);
+        max-height: calc(100vh - 120px);
+    }
+    
+    .webp-mode img {
+        max-height: calc(100vh - 160px) !important;
+    }
+}
+
+/* 高倍率ズーム時のスクロール最適化 */
+.webp-mode.zoom-active {
+    overflow: auto !important;
+    cursor: grab;
+    scroll-behavior: smooth;
+}
+
+.webp-mode.zoom-active:active {
+    cursor: grabbing;
+}
+
+/* WebP用のローディング表示 */
+.webp-mode .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: #666;
+    font-size: 16px;
+}
+
+/* WebP画像の品質最適化 */
+.webp-mode img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    backface-visibility: hidden;
+    transform: translateZ(0); /* GPU加速 */
+}
+
+/* ==============================================
+   分割表示機能スタイル（WebP対応）
+   ============================================== */
+
+/* 分割表示ボタン */
+.split-btn {
+    background: linear-gradient(135deg, #FF6600, #FF8533);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.split-btn:hover {
+    background: linear-gradient(135deg, #FF8533, #FF6600);
+    transform: scale(1.05);
+}
+
+.split-btn.active {
+    background: linear-gradient(135deg, #34A853, #4CAF50);
+    box-shadow: 0 0 10px rgba(52, 168, 83, 0.3);
+}
+
+/* 分割インジケーター */
+.split-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 102, 0, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    user-select: none;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.split-text {
+    font-size: 13px;
+}
+
+.split-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.split-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.split-toggle:active {
+    transform: scale(0.95);
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .split-indicator {
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 16px;
+    }
+    
+    .split-text {
+        font-size: 11px;
+    }
+    
+    .split-toggle {
+        padding: 3px 6px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+    
+    .split-btn {
+        min-width: 42px;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+}
+
+/* 小型スマホ */
+@media (max-width: 480px) {
+    .split-indicator {
+        top: 12px;
+        right: 12px;
+        padding: 4px 8px;
+        gap: 8px;
+    }
+    
+    .split-btn {
+        min-width: 38px;
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+}
+
+/* 分割表示時の特別な調整 */
+.webp-mode.split-active {
+    /* 分割表示時のコンテナ調整 */
+    justify-content: flex-start;
+}
+
+.webp-mode.split-active.split-right {
+    justify-content: flex-end;
+}
