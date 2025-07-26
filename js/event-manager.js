@@ -208,6 +208,13 @@ class EventManager {
      * モバイルメニューイベントの設定
      */
     setupMobileMenuEvents() {
+        // MobileMenuクラスが存在する場合はそちらに任せる
+        if (this.viewer.mobileMenu) {
+            console.log('MobileMenuクラスが存在するため、EventManagerでのメニューイベント設定をスキップ');
+            return;
+        }
+        
+        // MobileMenuクラスが無い場合のフォールバック
         const menuToggle = this.dom.get('menuToggle');
         const overlay = this.dom.get('overlay');
         

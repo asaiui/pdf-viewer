@@ -318,35 +318,100 @@
             <!-- コントロールバーリサイズハンドル -->
             <div class="resize-handle controls-resize" id="controlsResize" aria-label="コントロールバーの高さを調整"></div>
 
-            <div class="controls" id="controls" role="toolbar" aria-label="スクールナビコントロール">
-                <div class="page-controls" role="group" aria-label="ページ操作">
-                    <button class="control-btn" id="firstPageBtn" aria-label="最初のページ" title="最初のページ (Home)">⇤</button>
-                    <button class="control-btn" id="prevPageBtn" aria-label="前のページ" title="前のページ (←/PageUp)">◀</button>
-                    <div class="page-info">
-                        <label for="pageInput" class="sr-only">ページ番号</label>
-                        <input type="number" id="pageInput" class="page-input" value="1" min="1" aria-label="ページ番号">
-                        <span>/</span>
-                        <span id="totalPages">--</span>
+            <!-- 改善版コントロールバー -->
+            <div class="controls enhanced-controls" id="controls" role="toolbar" aria-label="スクールナビコントロール">
+                <!-- メインコントロール -->
+                <div class="main-controls">
+                    <!-- ナビゲーショングループ -->
+                    <div class="control-group navigation" role="group" aria-label="ページナビゲーション">
+                        <button class="enhanced-btn nav-btn" id="firstPageBtn" data-action="first" aria-label="最初のページ" title="最初のページ (Home)">
+                            <span class="btn-icon">⏮</span>
+                            <span class="btn-label">最初</span>
+                        </button>
+                        <button class="enhanced-btn nav-btn" id="prevPageBtn" data-action="prev" aria-label="前のページ" title="前のページ (←/PageUp)">
+                            <span class="btn-icon">◀</span>
+                            <span class="btn-label">前へ</span>
+                        </button>
+                        
+                        <div class="page-info-enhanced">
+                            <label for="pageInput" class="sr-only">ページ番号</label>
+                            <input type="number" id="pageInput" class="page-input-enhanced" value="1" min="1" aria-label="ページ番号、1から30まで入力可能">
+                            <span class="page-separator">/</span>
+                            <span id="totalPages" class="total-pages">30</span>
+                        </div>
+                        
+                        <button class="enhanced-btn nav-btn" id="nextPageBtn" data-action="next" aria-label="次のページ" title="次のページ (→/PageDown)">
+                            <span class="btn-icon">▶</span>
+                            <span class="btn-label">次へ</span>
+                        </button>
+                        <button class="enhanced-btn nav-btn" id="lastPageBtn" data-action="last" aria-label="最後のページ" title="最後のページ (End)">
+                            <span class="btn-icon">⏭</span>
+                            <span class="btn-label">最後</span>
+                        </button>
                     </div>
-                    <button class="control-btn" id="nextPageBtn" aria-label="次のページ" title="次のページ (→/PageDown)">▶</button>
-                    <button class="control-btn" id="lastPageBtn" aria-label="最後のページ" title="最後のページ (End)">⇥</button>
+
+                    <div class="control-separator" aria-hidden="true"></div>
+
+                    <!-- ズームグループ -->
+                    <div class="control-group zoom" role="group" aria-label="ズームコントロール">
+                        <button class="enhanced-btn zoom-btn" id="zoomOutBtn" data-action="zoom-out" aria-label="縮小" title="縮小 (-)">
+                            <span class="btn-icon">🔍−</span>
+                            <span class="btn-label">縮小</span>
+                        </button>
+                        
+                        <div class="zoom-info-enhanced">
+                            <span id="zoomDisplay" class="zoom-level" aria-live="polite">100%</span>
+                        </div>
+                        
+                        <button class="enhanced-btn zoom-btn" id="zoomInBtn" data-action="zoom-in" aria-label="拡大" title="拡大 (+)">
+                            <span class="btn-icon">🔍+</span>
+                            <span class="btn-label">拡大</span>
+                        </button>
+                    </div>
+
+                    <div class="control-separator" aria-hidden="true"></div>
+
+                    <!-- 表示グループ -->
+                    <div class="control-group view" role="group" aria-label="表示オプション">
+                        <button class="enhanced-btn view-btn split-btn" id="splitBtn" data-action="split" aria-label="分割表示" title="分割表示 (S)">
+                            <span class="btn-icon">⫶</span>
+                            <span class="btn-label">分割</span>
+                        </button>
+                        <button class="enhanced-btn view-btn fullscreen-btn" id="fullscreenBtn" data-action="fullscreen" aria-label="全画面表示" title="全画面表示 (F11)">
+                            <span class="btn-icon">⛶</span>
+                            <span class="btn-label">全画面</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="zoom-controls" role="group" aria-label="ズーム操作">
-                    <button class="zoom-btn" id="zoomOutBtn" aria-label="縮小" title="縮小 (-)">−</button>
-                    <div class="zoom-display" id="zoomDisplay" aria-live="polite">100%</div>
-                    <button class="zoom-btn" id="zoomInBtn" aria-label="拡大" title="拡大 (+)">＋</button>
-                    <button class="zoom-btn" id="fitWidthBtn" aria-label="幅に合わせる" title="幅に合わせる (W)">幅調整</button>
-                    <button class="zoom-btn" id="fitPageBtn" aria-label="ページに合わせる" title="全体表示 (F)">全体</button>
-                    <button class="zoom-btn split-btn" id="splitBtn" aria-label="分割表示" title="分割表示 (S)">分割</button>
-                    <button class="zoom-btn fullscreen-btn" id="fullscreenBtn" aria-label="全画面表示" title="全画面表示 (F11)">⛶</button>
+
+                <!-- モバイル用簡易コントロール -->
+                <div class="mobile-controls" id="mobileControls" aria-hidden="true">
+                    <div class="mobile-row primary">
+                        <button class="mobile-btn nav" data-action="prev" aria-label="前のページ">
+                            <span class="mobile-icon">◀</span>
+                        </button>
+                        
+                        <div class="mobile-page-info">
+                            <span class="current-page" id="mobileCurrentPage">1</span>
+                            <span class="page-sep">/</span>
+                            <span class="total" id="mobileTotalPages">30</span>
+                        </div>
+                        
+                        <button class="mobile-btn nav" data-action="next" aria-label="次のページ">
+                            <span class="mobile-icon">▶</span>
+                        </button>
+                        
+                        <button class="mobile-btn split-toggle" data-action="split-side-toggle" aria-label="左右表示切り替え">
+                            <span class="mobile-icon">⇄</span>
+                        </button>
+                        
                 </div>
             </div>
 
-            <!-- ステータスバー -->
-            <div class="status-bar" role="status" aria-label="ステータス情報">
-                <div class="load-status" id="loadStatus">📄 WebPビューアー準備中...</div>
-            </div>
+            <!-- スクリーンリーダー用ライブリージョン -->
+            <div id="sr-live-region" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
         </main>
     </div>
 
@@ -366,14 +431,6 @@
                 <div class="shortcut-item">
                     <span class="shortcut-key">+/-</span>
                     <span class="shortcut-desc">ズーム</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-key">F</span>
-                    <span class="shortcut-desc">全体表示</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-key">W</span>
-                    <span class="shortcut-desc">幅調整</span>
                 </div>
                 <div class="shortcut-item">
                     <span class="shortcut-key">S</span>
@@ -417,6 +474,7 @@
     <script src="js/progressive-loader.js"></script>
     <script src="js/indexeddb-manager.js"></script>
     <script src="js/webp-viewer.js"></script>
+    <script src="js/enhanced-controls.js"></script>
     <script src="js/main.js"></script>
 </body>
 

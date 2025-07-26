@@ -78,10 +78,6 @@ class ISCPDFViewer {
                 get: () => this.dom.get('loadingStatus'),
                 configurable: true
             },
-            loadStatus: {
-                get: () => this.dom.get('loadStatus'),
-                configurable: true
-            },
             appLoading: {
                 get: () => this.dom.get('appLoading'),
                 configurable: true
@@ -112,6 +108,9 @@ class ISCPDFViewer {
         if (typeof MobileMenu !== 'undefined') {
             this.mobileMenu = new MobileMenu(this);
         }
+        if (typeof EnhancedControls !== 'undefined') {
+            this.enhancedControls = new EnhancedControls(this);
+        }
         if (typeof PNGViewer !== 'undefined') {
             this.svgViewer = new PNGViewer(this);
         }
@@ -136,8 +135,8 @@ class ISCPDFViewer {
         // 表示モード管理（SVG専用）
         this.viewMode = 'svg';
 
-        // 内蔵機能の初期化（EventManagerが無い場合のフォールバック）
-        if (!this.eventManager) {
+        // 内蔵機能の初期化（MobileMenu使用時は除外）
+        if (!this.eventManager && !this.mobileMenu) {
             this.initializeBuiltinFeatures();
         }
     }
@@ -180,7 +179,6 @@ class ISCPDFViewer {
      * WebPモードでの初期化
      */
     async loadWebPMode() {
-        this.updateLoadStatus('WebPビューアを初期化中...');
 
         // 総ページ数を設定
         this.totalPages = 30;
@@ -196,7 +194,6 @@ class ISCPDFViewer {
         this.hideAppLoading();
         await this.renderPage();
 
-        this.updateLoadStatus('✅ WebPビューアが準備完了');
     }
 
     showAppLoading() {
@@ -262,7 +259,6 @@ class ISCPDFViewer {
         this.pageInput.value = this.currentPage;
         this.updateControls();
         this.updatePageDisplay();
-        this.updateLoadStatus(`📄 ページ ${this.currentPage} を表示中`);
 
         // レンダリングはデバウンスして実行（連続操作時の負荷軽減）
         const executeRender = () => {
@@ -284,7 +280,6 @@ class ISCPDFViewer {
             if (this.svgViewer.splitSide === 'left') {
                 // 左側表示中 → 右側表示へ
                 this.svgViewer.toggleSplitSide();
-                this.updateLoadStatus('📄 右側表示');
                 return;
             } else {
                 // 右側表示中 → 次のページの左側へ
@@ -305,7 +300,6 @@ class ISCPDFViewer {
             if (this.svgViewer.splitSide === 'right') {
                 // 右側表示中 → 左側表示へ
                 this.svgViewer.toggleSplitSide();
-                this.updateLoadStatus('📄 左側表示');
                 return;
             } else {
                 // 左側表示中 → 前のページの右側へ
@@ -335,7 +329,6 @@ class ISCPDFViewer {
             this.svgViewer.setZoom(this.currentZoom);
             this.updateZoomDisplay();
         }
-        this.updateLoadStatus('🔍 拡大表示中');
     }
 
     zoomOut() {
@@ -344,26 +337,8 @@ class ISCPDFViewer {
             this.svgViewer.setZoom(this.currentZoom);
             this.updateZoomDisplay();
         }
-        this.updateLoadStatus('🔍 縮小表示中');
     }
 
-    fitToWidth() {
-        if (this.svgViewer) {
-            this.currentZoom = 1.3; // WebPの場合は固定値
-            this.svgViewer.setZoom(this.currentZoom);
-            this.updateZoomDisplay();
-        }
-        this.updateLoadStatus('📐 幅に合わせて表示');
-    }
-
-    fitToPage() {
-        if (this.svgViewer) {
-            this.currentZoom = 1.0;
-            this.svgViewer.setZoom(this.currentZoom);
-            this.updateZoomDisplay();
-        }
-        this.updateLoadStatus('📱 全体表示');
-    }
 
     // 全画面表示
     toggleFullscreen() {
@@ -388,21 +363,18 @@ class ISCPDFViewer {
             const splitMode = this.svgViewer.toggleSplitMode();
             console.log('Split mode result:', splitMode);
             this.updateSplitButton(splitMode);
-            this.updateLoadStatus(splitMode ? '📄 分割表示モード' : '📄 通常表示モード');
         } else {
             console.error('分割表示機能が利用できません');
             console.error('svgViewer:', this.svgViewer);
             if (this.svgViewer) {
                 console.error('Available methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(this.svgViewer)));
             }
-            this.updateLoadStatus('⚠️ 分割表示機能が利用できません');
         }
     }
 
     toggleSplitSide() {
         if (this.svgViewer && typeof this.svgViewer.toggleSplitSide === 'function') {
             const splitSide = this.svgViewer.toggleSplitSide();
-            this.updateLoadStatus(`📄 ${splitSide === 'left' ? '左側' : '右側'}表示`);
         }
     }
 
@@ -426,14 +398,6 @@ class ISCPDFViewer {
         }
     }
 
-    updateLoadStatus(status) {
-        if (this.loadStatus) {
-            this.loadStatus.textContent = status;
-        }
-        if (this.loadingStatus) {
-            this.loadingStatus.textContent = status.replace(/[🔍📥📄✅⚠️]/g, '').trim();
-        }
-    }
 
     updateActiveTocItem() {
         document.querySelectorAll('.toc-link').forEach(link => {
@@ -483,7 +447,6 @@ class ISCPDFViewer {
     }
 
     showError(message) {
-        this.updateLoadStatus('⚠️ エラーが発生しました');
     }
 
     // イベントリスナーの初期化
@@ -502,15 +465,11 @@ class ISCPDFViewer {
         // ズームボタン
         const zoomInBtn = this.dom.get('zoomInBtn');
         const zoomOutBtn = this.dom.get('zoomOutBtn');
-        const fitWidthBtn = this.dom.get('fitWidthBtn');
-        const fitPageBtn = this.dom.get('fitPageBtn');
         const splitBtn = this.dom.get('splitBtn');
         const fullscreenBtn = this.dom.get('fullscreenBtn');
 
         if (zoomInBtn) zoomInBtn.addEventListener('click', () => this.zoomIn());
         if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => this.zoomOut());
-        if (fitWidthBtn) fitWidthBtn.addEventListener('click', () => this.fitToWidth());
-        if (fitPageBtn) fitPageBtn.addEventListener('click', () => this.fitToPage());
         // 分割ボタンのイベント処理はEventManagerで一元管理
         if (splitBtn) {
             console.log('Split button found - event handling managed by EventManager');
@@ -602,16 +561,6 @@ class ISCPDFViewer {
                     e.preventDefault();
                     this.zoomOut();
                     break;
-                case 'f':
-                case 'F':
-                    e.preventDefault();
-                    this.fitToPage();
-                    break;
-                case 'w':
-                case 'W':
-                    e.preventDefault();
-                    this.fitToWidth();
-                    break;
                 case 'F11':
                     e.preventDefault();
                     this.toggleFullscreen();
@@ -667,6 +616,13 @@ class ISCPDFViewer {
     }
 
     toggleMobileMenu() {
+        // MobileMenuクラスが利用可能な場合はそちらを使用
+        if (this.mobileMenu && typeof this.mobileMenu.toggleMobileMenu === 'function') {
+            this.mobileMenu.toggleMobileMenu();
+            return;
+        }
+
+        // フォールバック処理
         const sidebar = this.dom.get('sidebar');
         const overlay = this.dom.get('overlay');
         const menuToggle = this.dom.get('menuToggle');
@@ -681,6 +637,13 @@ class ISCPDFViewer {
     }
 
     closeMobileMenu() {
+        // MobileMenuクラスが利用可能な場合はそちらを使用
+        if (this.mobileMenu && typeof this.mobileMenu.closeMobileMenu === 'function') {
+            this.mobileMenu.closeMobileMenu();
+            return;
+        }
+
+        // フォールバック処理
         const sidebar = this.dom.get('sidebar');
         const overlay = this.dom.get('overlay');
         const menuToggle = this.dom.get('menuToggle');
@@ -714,6 +677,10 @@ class ISCPDFViewer {
         
         if (this.unifiedTouchHandler) {
             this.unifiedTouchHandler.destroy();
+        }
+        
+        if (this.enhancedControls) {
+            this.enhancedControls.destroy();
         }
         
         if (this.dom) {
