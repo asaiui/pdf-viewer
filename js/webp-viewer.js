@@ -482,7 +482,7 @@ class PNGViewer {
             // モバイル: ビューポートに合わせたフィット
             optimizedStyle = `
                 max-width: calc(100vw - 16px);
-                max-height: calc(100vh - 140px);
+                max-height: calc(100vh - 100px);
                 width: auto;
                 height: auto;
                 display: block;
@@ -496,7 +496,7 @@ class PNGViewer {
             // タブレット: 適度なサイズ制限
             optimizedStyle = `
                 max-width: calc(100vw - 32px);
-                max-height: calc(100vh - 100px);
+                max-height: calc(100vh - 80px);
                 width: auto;
                 height: auto;
                 display: block;
