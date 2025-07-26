@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホバーコントローラー改善案 | ISC PDF Viewer</title>
+    <link rel="stylesheet" href="hover-controls-proposal.css">
+    <style>
+        /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- ヘッダー -->
+        <header class="demo-header">
+            <h1 class="demo-title">🎛️ ホバーコントローラー改善案</h1>
+            <p class="demo-subtitle">
+                現在のUX課題を解決し、直感的で使いやすいコントロールシステムを提案
+            </p>
+        </header>
+
+        <!-- 問題分析セクション -->
+        <section class="analysis-section">
+            <h2 class="section-title">📊 現在の課題分析</h2>
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">🚫</div>
+                    <h3>視認性の問題</h3>
+                    <p>小さいアイコンとテキストで、機能が分かりにくい</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">📱</div>
+                    <h3>モバイル最適化不足</h3>
+                    <p>タッチデバイスでの操作性が悪い</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">⚡</div>
+                    <h3>反応性の遅延</h3>
+                    <p>ホバー/フォーカス状態のフィードバックが不明確</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">🎯</div>
+                    <h3>アクセシビリティ</h3>
+                    <p>キーボード操作やスクリーンリーダー対応が不十分</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 改善案比較 -->
+        <section class="comparison-section">
+            <h2 class="section-title">🔄 改善案比較</h2>
+            
+            <div class="comparison-container">
+                <!-- 現在のデザイン -->
+                <div class="comparison-item">
+                    <div class="comparison-header current">
+                        <h3>現在のコントローラー</h3>
+                        <span class="status-badge current">現状</span>
+                    </div>
+                    <div class="demo-area">
+                        <div class="controls-demo current-controls">
+                            <div class="page-controls">
+                                <button class="control-btn">⇤</button>
+                                <button class="control-btn">◀</button>
+                                <div class="page-info">
+                                    <input type="number" value="1" class="page-input">
+                                    <span>/30</span>
+                                </div>
+                                <button class="control-btn">▶</button>
+                                <button class="control-btn">⇥</button>
+                            </div>
+                            <div class="zoom-controls">
+                                <button class="zoom-btn">−</button>
+                                <div class="zoom-display">100%</div>
+                                <button class="zoom-btn">＋</button>
+                                <button class="zoom-btn">幅調整</button>
+                                <button class="zoom-btn">全体</button>
+                                <button class="zoom-btn">分割</button>
+                                <button class="zoom-btn">⛶</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 改善案 -->
+                <div class="comparison-item">
+                    <div class="comparison-header improved">
+                        <h3>改善案コントローラー</h3>
+                        <span class="status-badge improved">改善版</span>
+                    </div>
+                    <div class="demo-area">
+                        <div class="controls-demo improved-controls">
+                            <!-- メインコントロール -->
+                            <div class="main-controls">
+                                <div class="control-group navigation">
+                                    <button class="enhanced-btn nav-btn" data-action="first" aria-label="最初のページ">
+                                        <span class="btn-icon">⏮</span>
+                                        <span class="btn-label">最初</span>
+                                    </button>
+                                    <button class="enhanced-btn nav-btn" data-action="prev" aria-label="前のページ">
+                                        <span class="btn-icon">◀</span>
+                                        <span class="btn-label">前へ</span>
+                                    </button>
+                                    
+                                    <div class="page-info-enhanced">
+                                        <input type="number" value="1" class="page-input-enhanced" min="1" max="30">
+                                        <span class="page-separator">/</span>
+                                        <span class="total-pages">30</span>
+                                    </div>
+                                    
+                                    <button class="enhanced-btn nav-btn" data-action="next" aria-label="次のページ">
+                                        <span class="btn-icon">▶</span>
+                                        <span class="btn-label">次へ</span>
+                                    </button>
+                                    <button class="enhanced-btn nav-btn" data-action="last" aria-label="最後のページ">
+                                        <span class="btn-icon">⏭</span>
+                                        <span class="btn-label">最後</span>
+                                    </button>
+                                </div>
+
+                                <div class="control-separator"></div>
+
+                                <div class="control-group zoom">
+                                    <button class="enhanced-btn zoom-btn" data-action="zoom-out" aria-label="縮小">
+                                        <span class="btn-icon">🔍−</span>
+                                        <span class="btn-label">縮小</span>
+                                    </button>
+                                    
+                                    <div class="zoom-info-enhanced">
+                                        <span class="zoom-level">100%</span>
+                                    </div>
+                                    
+                                    <button class="enhanced-btn zoom-btn" data-action="zoom-in" aria-label="拡大">
+                                        <span class="btn-icon">🔍+</span>
+                                        <span class="btn-label">拡大</span>
+                                    </button>
+                                </div>
+
+                                <div class="control-separator"></div>
+
+                                <div class="control-group view">
+                                    <button class="enhanced-btn view-btn" data-action="fit-width" aria-label="幅に合わせる">
+                                        <span class="btn-icon">📐</span>
+                                        <span class="btn-label">幅調整</span>
+                                    </button>
+                                    <button class="enhanced-btn view-btn" data-action="fit-page" aria-label="ページに合わせる">
+                                        <span class="btn-icon">📄</span>
+                                        <span class="btn-label">全体</span>
+                                    </button>
+                                    <button class="enhanced-btn view-btn" data-action="split" aria-label="分割表示">
+                                        <span class="btn-icon">⫶</span>
+                                        <span class="btn-label">分割</span>
+                                    </button>
+                                    <button class="enhanced-btn view-btn" data-action="fullscreen" aria-label="全画面表示">
+                                        <span class="btn-icon">⛶</span>
+                                        <span class="btn-label">全画面</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- セカンダリコントロール（展開式） -->
+                            <div class="secondary-controls">
+                                <button class="toggle-secondary" aria-label="詳細設定を開く">
+                                    <span class="toggle-icon">⚙️</span>
+                                    <span class="toggle-label">詳細</span>
+                                </button>
+                            </div>
+
+                            <!-- 展開可能な詳細コントロール -->
+                            <div class="expandable-controls hidden">
+                                <div class="control-group advanced">
+                                    <button class="enhanced-btn" data-action="rotate-left">
+                                        <span class="btn-icon">↺</span>
+                                        <span class="btn-label">左回転</span>
+                                    </button>
+                                    <button class="enhanced-btn" data-action="rotate-right">
+                                        <span class="btn-icon">↻</span>
+                                        <span class="btn-label">右回転</span>
+                                    </button>
+                                    <button class="enhanced-btn" data-action="bookmark">
+                                        <span class="btn-icon">🔖</span>
+                                        <span class="btn-label">ブックマーク</span>
+                                    </button>
+                                    <button class="enhanced-btn" data-action="share">
+                                        <span class="btn-icon">📤</span>
+                                        <span class="btn-label">共有</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- モバイル版デモ -->
+        <section class="mobile-demo-section">
+            <h2 class="section-title">📱 モバイル最適化</h2>
+            
+            <div class="mobile-demo-container">
+                <div class="mobile-frame">
+                    <div class="mobile-controls-demo">
+                        <!-- モバイル用簡易コントロール -->
+                        <div class="mobile-controls">
+                            <div class="mobile-row primary">
+                                <button class="mobile-btn nav" data-action="prev">
+                                    <span class="mobile-icon">◀</span>
+                                </button>
+                                
+                                <div class="mobile-page-info">
+                                    <span class="current-page">1</span>
+                                    <span class="page-sep">/</span>
+                                    <span class="total">30</span>
+                                </div>
+                                
+                                <button class="mobile-btn nav" data-action="next">
+                                    <span class="mobile-icon">▶</span>
+                                </button>
+                                
+                                <button class="mobile-btn zoom" data-action="zoom-toggle">
+                                    <span class="mobile-icon">🔍</span>
+                                </button>
+                                
+                                <button class="mobile-btn menu" data-action="more">
+                                    <span class="mobile-icon">⋯</span>
+                                </button>
+                            </div>
+                            
+                            <!-- 展開可能なセカンダリ行 -->
+                            <div class="mobile-row secondary hidden">
+                                <button class="mobile-btn secondary">
+                                    <span class="mobile-icon">📐</span>
+                                </button>
+                                <button class="mobile-btn secondary">
+                                    <span class="mobile-icon">📄</span>
+                                </button>
+                                <button class="mobile-btn secondary">
+                                    <span class="mobile-icon">⫶</span>
+                                </button>
+                                <button class="mobile-btn secondary">
+                                    <span class="mobile-icon">⛶</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 改善ポイント -->
+        <section class="improvements-section">
+            <h2 class="section-title">✨ 主要改善ポイント</h2>
+            
+            <div class="improvements-grid">
+                <div class="improvement-card">
+                    <div class="improvement-icon">🎨</div>
+                    <h3>視覚的階層の明確化</h3>
+                    <ul>
+                        <li>アイコンとラベルの組み合わせ</li>
+                        <li>グループ化による機能分類</li>
+                        <li>色とコントラストの改善</li>
+                    </ul>
+                </div>
+                
+                <div class="improvement-card">
+                    <div class="improvement-icon">⚡</div>
+                    <h3>インタラクション強化</h3>
+                    <ul>
+                        <li>リッチなホバー/フォーカス効果</li>
+                        <li>スムーズなアニメーション</li>
+                        <li>触覚的フィードバック</li>
+                    </ul>
+                </div>
+                
+                <div class="improvement-card">
+                    <div class="improvement-icon">📱</div>
+                    <h3>レスポンシブ設計</h3>
+                    <ul>
+                        <li>デバイス別最適化</li>
+                        <li>タッチフレンドリーなサイズ</li>
+                        <li>展開式セカンダリ機能</li>
+                    </ul>
+                </div>
+                
+                <div class="improvement-card">
+                    <div class="improvement-icon">♿</div>
+                    <h3>アクセシビリティ</h3>
+                    <ul>
+                        <li>ARIA ラベルとロール</li>
+                        <li>キーボードナビゲーション</li>
+                        <li>スクリーンリーダー対応</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術仕様 -->
+        <section class="specs-section">
+            <h2 class="section-title">🔧 技術仕様</h2>
+            
+            <div class="specs-container">
+                <div class="spec-group">
+                    <h3>サイズとスペーシング</h3>
+                    <ul>
+                        <li>最小タッチターゲット: 44px × 44px</li>
+                        <li>デスクトップボタン: 40px × 32px</li>
+                        <li>グループ間マージン: 16px</li>
+                        <li>内部パディング: 8px</li>
+                    </ul>
+                </div>
+                
+                <div class="spec-group">
+                    <h3>色とコントラスト</h3>
+                    <ul>
+                        <li>プライマリ: #1a73e8 (WCAG AA準拠)</li>
+                        <li>ホバー: #1557b0</li>
+                        <li>フォーカス: 2px solid #4285f4</li>
+                        <li>背景: rgba(255,255,255,0.95)</li>
+                    </ul>
+                </div>
+                
+                <div class="spec-group">
+                    <h3>アニメーション</h3>
+                    <ul>
+                        <li>トランジション: 0.2s ease</li>
+                        <li>ホバー変形: scale(1.05)</li>
+                        <li>フェードイン: 0.3s cubic-bezier</li>
+                        <li>スライド: transform 0.25s</li>
+                    </ul>
+                </div>
+                
+                <div class="spec-group">
+                    <h3>ブレークポイント</h3>
+                    <ul>
+                        <li>モバイル: 0-768px</li>
+                        <li>タブレット: 769-1024px</li>
+                        <li>デスクトップ: 1025px+</li>
+                        <li>ワイド: 1440px+</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="hover-controls-proposal.js"></script>
+</body>
+</html>

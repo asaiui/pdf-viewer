@@ -235,19 +235,22 @@ class ISCPDFViewer {
 
     // ページナビゲーション機能（デバウンス付き）
     goToPage(pageNumber, immediate = false) {
-
         // ページ数チェック
         if (!this.totalPages) {
+            console.warn('goToPage: totalPages が設定されていません');
             return;
         }
 
         const maxPages = this.totalPages;
         const newPage = Math.max(1, Math.min(pageNumber, maxPages));
 
-
+        // 現在のページと同じ場合は何もしない
         if (newPage === this.currentPage) {
+            console.log(`goToPage: 既に同じページ ${newPage} です`);
             return;
         }
+
+        console.log(`goToPage: ${this.currentPage} → ${newPage}`);
 
         // 前回のナビゲーションタイマーをクリア
         if (this.navigationTimeout) {
@@ -256,33 +259,39 @@ class ISCPDFViewer {
 
         // ページ番号を即座に更新（UI の応答性向上）
         this.currentPage = newPage;
-        this.pageInput.value = this.currentPage;
+        if (this.pageInput) {
+            this.pageInput.value = this.currentPage;
+        }
         this.updateControls();
         this.updatePageDisplay();
 
         // レンダリングはデバウンスして実行（連続操作時の負荷軽減）
         const executeRender = () => {
-            // 新しいページをレンダリング
+            console.log(`executeRender: ページ ${this.currentPage} をレンダリング開始`);
             this.renderPage();
         };
 
         if (immediate) {
             executeRender();
         } else {
-            // 100ms後にレンダリング実行（デバウンス）
-            this.navigationTimeout = setTimeout(executeRender, 100);
+            // 150ms後にレンダリング実行（デバウンス期間を延長）
+            this.navigationTimeout = setTimeout(executeRender, 150);
         }
     }
 
     nextPage() {
-        // 分割表示モード時の特別なナビゲーション
+        console.log(`nextPage called: currentPage=${this.currentPage}, splitMode=${this.svgViewer?.splitMode}, splitSide=${this.svgViewer?.splitSide}`);
+        
+        // 分割表示モード時の直感的なナビゲーション
         if (this.svgViewer && this.svgViewer.splitMode) {
             if (this.svgViewer.splitSide === 'left') {
-                // 左側表示中 → 右側表示へ
+                // 左側表示中 → 右側表示へ（同じページ）
+                console.log('Switching from left to right side of same page');
                 this.svgViewer.toggleSplitSide();
                 return;
             } else {
                 // 右側表示中 → 次のページの左側へ
+                console.log('Moving to next page, left side');
                 this.svgViewer.splitSide = 'left';
                 this.svgViewer.updateSplitIndicator();
                 this.goToPage(this.currentPage + 1);
@@ -295,14 +304,18 @@ class ISCPDFViewer {
     }
 
     prevPage() {
-        // 分割表示モード時の特別なナビゲーション
+        console.log(`prevPage called: currentPage=${this.currentPage}, splitMode=${this.svgViewer?.splitMode}, splitSide=${this.svgViewer?.splitSide}`);
+        
+        // 分割表示モード時の直感的なナビゲーション
         if (this.svgViewer && this.svgViewer.splitMode) {
             if (this.svgViewer.splitSide === 'right') {
-                // 右側表示中 → 左側表示へ
+                // 右側表示中 → 左側表示へ（同じページ）
+                console.log('Switching from right to left side of same page');
                 this.svgViewer.toggleSplitSide();
                 return;
             } else {
                 // 左側表示中 → 前のページの右側へ
+                console.log('Moving to previous page, right side');
                 this.svgViewer.splitSide = 'right';
                 this.svgViewer.updateSplitIndicator();
                 this.goToPage(this.currentPage - 1);
@@ -315,10 +328,20 @@ class ISCPDFViewer {
     }
 
     firstPage() {
+        // 分割表示モード時は左側から開始
+        if (this.svgViewer && this.svgViewer.splitMode) {
+            this.svgViewer.splitSide = 'left';
+            this.svgViewer.updateSplitIndicator();
+        }
         this.goToPage(1);
     }
 
     lastPage() {
+        // 分割表示モード時は右側で終了
+        if (this.svgViewer && this.svgViewer.splitMode) {
+            this.svgViewer.splitSide = 'right';
+            this.svgViewer.updateSplitIndicator();
+        }
         this.goToPage(this.totalPages);
     }
 
@@ -569,6 +592,13 @@ class ISCPDFViewer {
                 case 'S':
                     e.preventDefault();
                     this.toggleSplitMode();
+                    break;
+                case 'Tab':
+                    // 分割表示モード時のみ、左右切り替え
+                    if (this.svgViewer && this.svgViewer.splitMode) {
+                        e.preventDefault();
+                        this.toggleSplitSide();
+                    }
                     break;
                 case '?':
                     e.preventDefault();

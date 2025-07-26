@@ -1,0 +1,833 @@
+/* ================================
+   ホバーコントローラー改善案 CSS
+   ================================ */
+
+:root {
+    /* カラーパレット */
+    --primary-500: #1a73e8;
+    --primary-600: #1557b0;
+    --primary-400: #4285f4;
+    --primary-300: #8ab4f8;
+    
+    --secondary-500: #34a853;
+    --secondary-600: #2e7d32;
+    
+    --neutral-100: #f8f9fa;
+    --neutral-200: #e8eaed;
+    --neutral-300: #dadce0;
+    --neutral-400: #bdc1c6;
+    --neutral-500: #9aa0a6;
+    --neutral-600: #5f6368;
+    --neutral-700: #3c4043;
+    --neutral-800: #202124;
+    
+    --surface: #ffffff;
+    --surface-variant: #f1f3f4;
+    --on-surface: #3c4043;
+    --on-surface-variant: #5f6368;
+    
+    /* シャドウ */
+    --shadow-1: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    --shadow-2: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+    --shadow-3: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px rgba(60, 64, 67, 0.3);
+    --shadow-4: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
+    
+    /* アニメーション */
+    --duration-short: 150ms;
+    --duration-medium: 250ms;
+    --duration-long: 350ms;
+    --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+    --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ベーススタイル */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: var(--on-surface);
+    background: var(--neutral-100);
+}
+
+/* デモコンテナ */
+.demo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ヘッダー */
+.demo-header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding: 48px 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-1);
+}
+
+.demo-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-500);
+    margin-bottom: 16px;
+}
+
+.demo-subtitle {
+    font-size: 1.125rem;
+    color: var(--on-surface-variant);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* セクションスタイル */
+.section-title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--on-surface);
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+/* 問題分析セクション */
+.analysis-section {
+    margin-bottom: 64px;
+    padding: 48px 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-1);
+}
+
+.problems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.problem-card {
+    padding: 24px;
+    background: var(--surface-variant);
+    border-radius: 12px;
+    text-align: center;
+    transition: transform var(--duration-short) var(--easing-standard);
+}
+
+.problem-card:hover {
+    transform: translateY(-4px);
+}
+
+.problem-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+}
+
+.problem-card h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--on-surface);
+}
+
+.problem-card p {
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+}
+
+/* 比較セクション */
+.comparison-section {
+    margin-bottom: 64px;
+}
+
+.comparison-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.comparison-item {
+    background: var(--surface);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-2);
+    transition: box-shadow var(--duration-medium) var(--easing-standard);
+}
+
+.comparison-item:hover {
+    box-shadow: var(--shadow-3);
+}
+
+.comparison-header {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comparison-header.current {
+    background: linear-gradient(135deg, var(--neutral-600) 0%, var(--neutral-700) 100%);
+    color: white;
+}
+
+.comparison-header.improved {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+    color: white;
+}
+
+.comparison-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.current {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.status-badge.improved {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.demo-area {
+    padding: 32px 24px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--neutral-100);
+}
+
+/* 現在のコントローラーデモ */
+.current-controls {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--neutral-300);
+    border-radius: 12px;
+}
+
+.current-controls .page-controls,
+.current-controls .zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.current-controls .control-btn,
+.current-controls .zoom-btn {
+    background: var(--primary-500);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.current-controls .control-btn:hover,
+.current-controls .zoom-btn:hover {
+    background: var(--primary-600);
+}
+
+.current-controls .page-input {
+    width: 50px;
+    padding: 6px 8px;
+    border: 1px solid var(--neutral-300);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.current-controls .zoom-display {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 12px;
+    background: var(--neutral-200);
+    border-radius: 4px;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* 改善案コントローラー */
+.improved-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: var(--shadow-2);
+    min-width: 600px;
+}
+
+.main-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--surface-variant);
+    border-radius: 12px;
+    border: 1px solid var(--neutral-300);
+}
+
+.control-separator {
+    width: 1px;
+    height: 32px;
+    background: var(--neutral-300);
+}
+
+/* 強化されたボタン */
+.enhanced-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--neutral-300);
+    border-radius: 8px;
+    color: var(--on-surface);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-short) var(--easing-standard);
+    position: relative;
+    overflow: hidden;
+    min-height: 40px;
+}
+
+.enhanced-btn:hover {
+    background: var(--primary-500);
+    color: white;
+    border-color: var(--primary-500);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+.enhanced-btn:focus {
+    outline: 2px solid var(--primary-400);
+    outline-offset: 2px;
+}
+
+.enhanced-btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-1);
+}
+
+.enhanced-btn .btn-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.enhanced-btn .btn-label {
+    white-space: nowrap;
+    font-size: 0.75rem;
+    opacity: 0.9;
+}
+
+/* ページ情報（改善版） */
+.page-info-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--neutral-300);
+}
+
+.page-input-enhanced {
+    width: 50px;
+    padding: 6px 8px;
+    border: 1px solid var(--neutral-300);
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: var(--surface);
+    transition: border-color var(--duration-short) var(--easing-standard);
+}
+
+.page-input-enhanced:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+.page-separator {
+    color: var(--on-surface-variant);
+    font-weight: 600;
+}
+
+.total-pages {
+    color: var(--on-surface-variant);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* ズーム情報（改善版） */
+.zoom-info-enhanced {
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--neutral-300);
+}
+
+.zoom-level {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--on-surface);
+    min-width: 50px;
+    text-align: center;
+    display: block;
+}
+
+/* セカンダリコントロール */
+.secondary-controls {
+    display: flex;
+    justify-content: center;
+}
+
+.toggle-secondary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--surface-variant);
+    border: 1px solid var(--neutral-300);
+    border-radius: 20px;
+    color: var(--on-surface-variant);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-short) var(--easing-standard);
+}
+
+.toggle-secondary:hover {
+    background: var(--primary-500);
+    color: white;
+    border-color: var(--primary-500);
+}
+
+.toggle-icon {
+    font-size: 0.875rem;
+}
+
+/* 展開可能コントロール */
+.expandable-controls {
+    padding-top: 16px;
+    border-top: 1px solid var(--neutral-300);
+    animation: slideDown var(--duration-medium) var(--easing-standard);
+}
+
+.expandable-controls.hidden {
+    display: none;
+}
+
+.expandable-controls .control-group {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* モバイルデモセクション */
+.mobile-demo-section {
+    margin-bottom: 64px;
+    padding: 48px 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-1);
+}
+
+.mobile-demo-container {
+    display: flex;
+    justify-content: center;
+}
+
+.mobile-frame {
+    width: 320px;
+    height: 200px;
+    background: #000;
+    border-radius: 20px;
+    padding: 16px;
+    position: relative;
+    box-shadow: var(--shadow-3);
+}
+
+.mobile-frame::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+}
+
+.mobile-controls-demo {
+    width: 100%;
+    height: 100%;
+    background: var(--neutral-100);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.mobile-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mobile-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: var(--shadow-1);
+}
+
+.mobile-row.secondary {
+    animation: slideUp var(--duration-medium) var(--easing-standard);
+}
+
+.mobile-row.secondary.hidden {
+    display: none;
+}
+
+.mobile-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--primary-500);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--duration-short) var(--easing-standard);
+    font-size: 0.75rem;
+}
+
+.mobile-btn:hover {
+    background: var(--primary-600);
+    transform: scale(1.05);
+}
+
+.mobile-btn:active {
+    transform: scale(0.95);
+}
+
+.mobile-btn.secondary {
+    background: var(--neutral-400);
+    width: 40px;
+    height: 40px;
+}
+
+.mobile-btn.secondary:hover {
+    background: var(--neutral-500);
+}
+
+.mobile-icon {
+    font-size: 1.125rem;
+}
+
+.mobile-page-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--on-surface);
+    background: var(--surface-variant);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.current-page {
+    color: var(--primary-500);
+}
+
+.page-sep {
+    color: var(--on-surface-variant);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 改善ポイントセクション */
+.improvements-section {
+    margin-bottom: 64px;
+    padding: 48px 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-1);
+}
+
+.improvements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.improvement-card {
+    padding: 24px;
+    background: var(--surface-variant);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-500);
+}
+
+.improvement-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+}
+
+.improvement-card h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--on-surface);
+}
+
+.improvement-card ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+.improvement-card li {
+    padding: 4px 0;
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+    position: relative;
+    padding-left: 20px;
+}
+
+.improvement-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--secondary-500);
+    font-weight: 600;
+}
+
+/* 技術仕様セクション */
+.specs-section {
+    padding: 48px 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-1);
+}
+
+.specs-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.spec-group {
+    padding: 24px;
+    background: var(--surface-variant);
+    border-radius: 12px;
+}
+
+.spec-group h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--on-surface);
+    border-bottom: 2px solid var(--primary-500);
+    padding-bottom: 8px;
+}
+
+.spec-group ul {
+    list-style: none;
+}
+
+.spec-group li {
+    padding: 6px 0;
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+    font-family: 'Monaco', 'Menlo', monospace;
+    border-bottom: 1px solid var(--neutral-200);
+}
+
+.spec-group li:last-child {
+    border-bottom: none;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+    .comparison-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .improved-controls {
+        min-width: auto;
+        padding: 16px;
+    }
+    
+    .main-controls {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .control-group {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .control-separator {
+        width: 100%;
+        height: 1px;
+    }
+    
+    .demo-title {
+        font-size: 2rem;
+    }
+    
+    .mobile-frame {
+        width: 280px;
+        height: 180px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .demo-container {
+        padding: 16px;
+    }
+    
+    .demo-header {
+        padding: 32px 16px;
+    }
+    
+    .analysis-section,
+    .improvements-section,
+    .specs-section,
+    .mobile-demo-section {
+        padding: 32px 16px;
+    }
+    
+    .problems-grid,
+    .improvements-grid,
+    .specs-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* フォーカス表示の改善 */
+.enhanced-btn:focus-visible,
+.mobile-btn:focus-visible,
+.toggle-secondary:focus-visible {
+    outline: 2px solid var(--primary-400);
+    outline-offset: 2px;
+}
+
+/* プリント用スタイル */
+@media print {
+    body {
+        background: white;
+    }
+    
+    .demo-container {
+        box-shadow: none;
+    }
+    
+    .comparison-item,
+    .analysis-section,
+    .improvements-section,
+    .specs-section,
+    .mobile-demo-section {
+        box-shadow: none;
+        border: 1px solid var(--neutral-300);
+    }
+}
+
+/* ダークモード対応（将来の拡張用） */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --surface: #202124;
+        --surface-variant: #303134;
+        --on-surface: #e8eaed;
+        --on-surface-variant: #9aa0a6;
+        --neutral-100: #303134;
+        --neutral-200: #3c4043;
+        --neutral-300: #5f6368;
+    }
+}
+
+/* 高コントラストモード */
+@media (prefers-contrast: high) {
+    .enhanced-btn,
+    .mobile-btn {
+        border-width: 2px;
+    }
+    
+    .enhanced-btn:focus,
+    .mobile-btn:focus {
+        outline-width: 3px;
+    }
+}
+
+/* モーション軽減 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

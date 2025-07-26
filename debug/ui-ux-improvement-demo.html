@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI/UX改善提案 - デモページ</title>
+    <style>
+        :root {
+            /* 現在の色（ISC Blue基調） */
+            --current-primary: #0066CC;
+            --current-secondary: #FF6600;
+            
+            /* 改善提案色（より洗練された配色） */
+            --improved-primary: #1a73e8;
+            --improved-secondary: #34a853;
+            --improved-accent: #fbbc04;
+            --improved-neutral: #5f6368;
+            
+            /* 背景とテキスト */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-dark: #202124;
+            --text-primary: #3c4043;
+            --text-secondary: #5f6368;
+            --text-light: #9aa0a6;
+            
+            /* 新しいカラーパレット */
+            --surface-1: #ffffff;
+            --surface-2: #f1f3f4;
+            --surface-3: #e8eaed;
+            --border-light: #dadce0;
+            --border-medium: #c4c7c5;
+            
+            /* シャドウとエレベーション */
+            --shadow-1: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+            --shadow-2: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+            --shadow-3: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px rgba(60, 64, 67, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: var(--surface-1);
+            border-radius: 16px;
+            box-shadow: var(--shadow-1);
+        }
+
+        .demo-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--improved-primary);
+            margin-bottom: 16px;
+        }
+
+        .demo-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-item {
+            background: var(--surface-1);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .comparison-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-3);
+        }
+
+        .comparison-header {
+            padding: 20px;
+            font-weight: 600;
+            text-align: center;
+            color: white;
+        }
+
+        .current-header {
+            background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+        }
+
+        .improved-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+        }
+
+        .comparison-content {
+            padding: 30px;
+        }
+
+        /* 現在のデザイン再現 */
+        .current-design {
+            font-family: "Noto Sans JP", sans-serif;
+        }
+
+        .current-header-demo {
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.95) 0%, rgba(0, 82, 163, 0.95) 100%);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .current-sidebar {
+            background: #F8F9FA;
+            border-right: 1px solid #E1E5E9;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .current-toc-item {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .current-toc-item:hover {
+            background: #E8F0FE;
+        }
+
+        /* 改善版デザイン */
+        .improved-design {
+            font-family: 'Google Sans', 'Noto Sans JP', sans-serif;
+        }
+
+        .improved-header-demo {
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+            color: white;
+            padding: 16px 24px;
+            font-size: 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-1);
+        }
+
+        .improved-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .improved-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .improved-button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .improved-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .improved-sidebar {
+            background: var(--surface-1);
+            border-radius: 12px;
+            padding: 24px;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-1);
+        }
+
+        .improved-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--improved-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .improved-toc-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid transparent;
+        }
+
+        .improved-toc-item:hover {
+            background: var(--surface-2);
+            border-color: var(--border-light);
+            transform: translateX(4px);
+        }
+
+        .improved-toc-icon {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .improved-toc-text {
+            flex: 1;
+        }
+
+        .improved-page-number {
+            background: var(--improved-primary);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* 改善ポイント説明 */
+        .improvement-points {
+            background: var(--surface-1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-1);
+        }
+
+        .improvement-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--improved-primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .point-card {
+            background: var(--surface-2);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--improved-primary);
+        }
+
+        .point-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .point-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-title {
+                font-size: 2rem;
+            }
+            
+            .points-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* スクロールバー改善 */
+        .improved-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .improved-sidebar::-webkit-scrollbar-track {
+            background: var(--surface-2);
+            border-radius: 3px;
+        }
+
+        .improved-sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 3px;
+        }
+
+        .improved-sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <header class="demo-header">
+            <h1 class="demo-title">📚 UI/UX改善提案</h1>
+            <p class="demo-subtitle">
+                現在のデザイン完成度60% → 85%を目指す<br>
+                ユーザビリティと可読性を大幅に向上させる改善案
+            </p>
+        </header>
+
+        <div class="comparison-grid">
+            <!-- 現在のデザイン -->
+            <div class="comparison-item current-design">
+                <div class="comparison-header current-header">
+                    🔍 現在のデザイン (60%)
+                </div>
+                <div class="comparison-content">
+                    <div class="current-header-demo">
+                        📚 情報科学専門学校 学校案内 2026
+                    </div>
+                    <div class="current-sidebar">
+                        <div class="current-toc-item">📋 学校概要</div>
+                        <div class="current-toc-item">🏫 キャンパス案内</div>
+                        <div class="current-toc-item">📚 8学科20コース</div>
+                        <div class="current-toc-item">🔒 情報セキュリティ学科</div>
+                        <div class="current-toc-item">🤖 実践AI科</div>
+                        <div class="current-toc-item">🎮 先端ITシステム科</div>
+                        <div class="current-toc-item">💻 情報処理科</div>
+                        <div class="current-toc-item">🌐 実践IoT科</div>
+                        <div class="current-toc-item">🎨 Web技術科</div>
+                        <div class="current-toc-item">📊 ビジネス科</div>
+                        <div class="current-toc-item">🎓 就職実績</div>
+                        <div class="current-toc-item">💰 学費・奨学金</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 改善版デザイン -->
+            <div class="comparison-item improved-design">
+                <div class="comparison-header improved-header">
+                    ✨ 改善版デザイン (85%)
+                </div>
+                <div class="comparison-content">
+                    <div class="improved-header-demo">
+                        <div class="improved-logo">
+                            🎓 ISC 学校案内 2026
+                        </div>
+                        <div class="improved-actions">
+                            <a href="#" class="improved-button">🔍 検索</a>
+                            <a href="#" class="improved-button">📋 目次</a>
+                        </div>
+                    </div>
+                    <div class="improved-sidebar">
+                        <div class="improved-section-title">📖 学校案内</div>
+                        <div class="improved-toc-item">
+                            <span class="improved-toc-icon">📋</span>
+                            <span class="improved-toc-text">学校概要</span>
+                            <span class="improved-page-number">p.2</span>
+                        </div>
+                        <div class="improved-toc-item">
+                            <span class="improved-toc-icon">🏫</span>
+                            <span class="improved-toc-text">キャンパス案内</span>
+                            <span class="improved-page-number">p.4</span>
+                        </div>
+                        
+                        <div class="improved-section-title">🎯 学科・コース</div>
+                        <div class="improved-toc-item">
+                            <span class="improved-toc-icon">🔒</span>
+                            <span class="improved-toc-text">情報セキュリティ学科</span>
+                            <span class="improved-page-number">p.17</span>
+                        </div>
+                        <div class="improved-toc-item">
+                            <span class="improved-toc-icon">🤖</span>
+                            <span class="improved-toc-text">実践AI科</span>
+                            <span class="improved-page-number">p.19</span>
+                        </div>
+                        <div class="improved-toc-item">
+                            <span class="improved-toc-icon">🎮</span>
+                            <span class="improved-toc-text">先端ITシステム科</span>
+                            <span class="improved-page-number">p.21</span>
+                        </div>
+                        <div class="improved-toc-item">
+                            <span class="improved-toc-icon">💻</span>
+                            <span class="improved-toc-text">情報処理科</span>
+                            <span class="improved-page-number">p.23</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="improvement-points">
+            <h2 class="improvement-title">🎯 主要改善ポイント</h2>
+            <div class="points-grid">
+                <div class="point-card">
+                    <div class="point-title">
+                        🎨 <span>モダンなビジュアルデザイン</span>
+                    </div>
+                    <div class="point-description">
+                        Google Material Design 3準拠の洗練されたカラーパレット、適切なシャドウとエレベーション、モダンなタイポグラフィを採用
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        📱 <span>レスポンシブ改善</span>
+                    </div>
+                    <div class="point-description">
+                        モバイルファーストの設計、タッチフレンドリーなインタラクション、適応的なレイアウト調整
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        🔍 <span>情報階層の明確化</span>
+                    </div>
+                    <div class="point-description">
+                        セクション分けの強化、ページ番号の視覚的表示、コンテンツの分類と整理
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        ⚡ <span>インタラクション向上</span>
+                    </div>
+                    <div class="point-description">
+                        ホバーエフェクトの追加、スムーズなアニメーション、フィードバックの充実
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        🎯 <span>アクセシビリティ強化</span>
+                    </div>
+                    <div class="point-description">
+                        コントラスト比の改善、フォーカス状態の明確化、スクリーンリーダー対応
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        🚀 <span>パフォーマンス最適化</span>
+                    </div>
+                    <div class="point-description">
+                        CSS最適化、アニメーション効率化、ブラウザ互換性の向上
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="improvement-points">
+            <h2 class="improvement-title">📊 具体的な変更案</h2>
+            <div class="points-grid">
+                <div class="point-card">
+                    <div class="point-title">
+                        🎨 <span>カラーパレット刷新</span>
+                    </div>
+                    <div class="point-description">
+                        <strong>現在:</strong> #0066CC (ISC Blue) + #FF6600<br>
+                        <strong>改善:</strong> #1a73e8 (Google Blue) + #34a853 (Green) + #fbbc04 (Yellow)
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        📏 <span>レイアウト改善</span>
+                    </div>
+                    <div class="point-description">
+                        <strong>ヘッダー:</strong> 48px → 64px (20%拡大)<br>
+                        <strong>サイドバー:</strong> 固定幅 → 可変幅<br>
+                        <strong>余白:</strong> 8px → 16px (一貫した余白)
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        🔤 <span>タイポグラフィ</span>
+                    </div>
+                    <div class="point-description">
+                        <strong>フォント:</strong> Google Sans + Noto Sans JP<br>
+                        <strong>サイズ:</strong> 14px → 15px (基本テキスト)<br>
+                        <strong>行間:</strong> 1.4 → 1.6 (可読性向上)
+                    </div>
+                </div>
+
+                <div class="point-card">
+                    <div class="point-title">
+                        🎭 <span>インタラクション</span>
+                    </div>
+                    <div class="point-description">
+                        <strong>ホバー:</strong> 背景色変更 + transform効果<br>
+                        <strong>トランジション:</strong> 0.2s ease統一<br>
+                        <strong>フォーカス:</strong> 2px outline + 影付き
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // デモページのインタラクション
+        document.querySelectorAll('.improved-toc-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 選択状態の切り替え
+                document.querySelectorAll('.improved-toc-item').forEach(i => i.style.background = '');
+                this.style.background = 'var(--surface-2)';
+                this.style.borderColor = 'var(--improved-primary)';
+            });
+        });
+
+        // スムーズスクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

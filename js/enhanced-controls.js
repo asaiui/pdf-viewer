@@ -95,6 +95,7 @@ class EnhancedControls {
             
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
+                console.log(`Mobile button clicked: action=${action}`);
                 this.handleMobileAction(action, btn);
                 this.addMobileClickEffect(btn);
             });
@@ -152,16 +153,20 @@ class EnhancedControls {
     handleControlAction(action, button) {
         switch (action) {
             case 'first':
-                this.viewer.firstPage();
+                // EventManagerに委譲 - 重複実行を防ぐ
+                console.log('Enhanced-controls: first page action delegated to EventManager');
                 break;
             case 'prev':
-                this.viewer.prevPage();
+                // EventManagerに委譲 - 重複実行を防ぐ
+                console.log('Enhanced-controls: prev page action delegated to EventManager');
                 break;
             case 'next':
-                this.viewer.nextPage();
+                // EventManagerに委譲 - 重複実行を防ぐ
+                console.log('Enhanced-controls: next page action delegated to EventManager');
                 break;
             case 'last':
-                this.viewer.lastPage();
+                // EventManagerに委譲 - 重複実行を防ぐ
+                console.log('Enhanced-controls: last page action delegated to EventManager');
                 break;
             case 'zoom-in':
                 this.viewer.zoomIn();
@@ -184,9 +189,13 @@ class EnhancedControls {
     handleMobileAction(action, button) {
         switch (action) {
             case 'prev':
+                // モバイル版では直接実行（重複がないため）
+                console.log('Enhanced-controls mobile: executing prev page');
                 this.viewer.prevPage();
                 break;
             case 'next':
+                // モバイル版では直接実行（重複がないため）
+                console.log('Enhanced-controls mobile: executing next page');
                 this.viewer.nextPage();
                 break;
             case 'split-side-toggle':
@@ -551,6 +560,10 @@ class EnhancedControls {
     }
 
     setupKeyboardNavigation() {
+        // キーボードナビゲーションはEventManagerに一元化
+        // 重複実行を防ぐため、Enhanced-controlsでは無効化
+        console.log('Enhanced-controls: キーボードナビゲーションはEventManagerに委譲');
+        /*
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT') return;
             
@@ -591,6 +604,7 @@ class EnhancedControls {
                     break;
             }
         });
+        */
     }
 
     updateAriaAttributes() {

@@ -26,7 +26,10 @@
       "Bash(mkdir:*)",
       "Bash(mv:*)",
       "Bash(brew uninstall:*)",
-      "Bash(brew list:*)"
+      "Bash(brew list:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh auth:*)"
     ],
     "deny": []
   }
