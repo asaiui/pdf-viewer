@@ -83,8 +83,9 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ヘッダー（改善版） */
+/* ヘッダー（モバイルのみ表示） */
 .header {
+    display: none; /* デスクトップでは非表示 */
     background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -94,7 +95,6 @@ body {
     position: relative;
     z-index: 100;
     height: 56px;
-    display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -209,7 +209,7 @@ body {
 .container {
     display: flex;
     flex-direction: row;
-    height: calc(100vh - 64px); /* ヘッダー高さを引く */
+    height: 100vh; /* フルスクリーン表示 */
     max-width: 100%;
     margin: 0 auto;
 }
@@ -825,8 +825,12 @@ body {
 
 /* スマートフォン縦向き (320px-479px) */
 @media (max-width: 479px) {
+    .header {
+        display: flex; /* スマホではヘッダーを表示 */
+    }
+    
     .container {
-        height: calc(100vh - 56px); /* モバイル用ヘッダー高さ */
+        height: calc(100vh - 56px); /* ヘッダー高さを引く */
     }
     
     .pdf-viewer-container .controls.enhanced-controls {
@@ -861,8 +865,12 @@ body {
 
 /* スマートフォン横向き・大画面スマートフォン (480px-767px) */
 @media (min-width: 480px) and (max-width: 767px) {
+    .header {
+        display: flex; /* スマホではヘッダーを表示 */
+    }
+    
     .container {
-        height: calc(100vh - 56px); /* スマートフォン用ヘッダー高さ */
+        height: calc(100vh - 56px); /* ヘッダー高さを引く */
     }
     
     .pdf-viewer-container .controls.enhanced-controls {
@@ -2025,10 +2033,10 @@ body {
 
     .sidebar {
         position: fixed;
-        top: 68px;
+        top: 0;
         left: -320px;
         width: 320px;
-        height: calc(100vh - 56px);
+        height: 100vh;
         z-index: 200;
         box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2125,6 +2133,7 @@ body {
 /* タブレット対応 */
 @media (min-width: 769px) and (max-width: 1023px) {
     .header {
+        display: flex; /* タブレットではヘッダーを表示 */
         padding: 12px 20px;
     }
 
@@ -2132,8 +2141,8 @@ body {
         width: 280px;
         left: -280px;
         position: fixed;
-        top: 56px;
-        height: calc(100vh - 56px);
+        top: 0;
+        height: 100vh;
         z-index: 200;
         box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2325,8 +2334,8 @@ body {
     }
 
     .sidebar {
-        top: 56px;
-        height: calc(100vh - 56px);
+        top: 0;
+        height: 100vh;
     }
 
     .pdf-viewer-container .controls {
