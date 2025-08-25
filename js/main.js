@@ -86,7 +86,7 @@ class ISCPDFViewer {
     }
 
     initializeModules() {
-        // CDN マネージャーを最初に初期化
+        // CDNマネージャーを最初に初期化
         if (typeof CDNManager !== 'undefined') {
             this.cdnManager = new CDNManager();
         }
@@ -99,6 +99,12 @@ class ISCPDFViewer {
         // if (typeof ZoomManager !== 'undefined') {
         //     this.zoomManager = new ZoomManager(this);
         // }
+        
+        // ページフリップアニメーションマネージャーの初期化
+        if (typeof PageFlipManager !== 'undefined') {
+            this.pageFlipManager = new PageFlipManager(this);
+        }
+        
         if (typeof FullscreenManager !== 'undefined') {
             this.fullscreenManager = new FullscreenManager(this);
         }
@@ -282,6 +288,12 @@ class ISCPDFViewer {
     nextPage() {
         console.log(`nextPage called: currentPage=${this.currentPage}, splitMode=${this.svgViewer?.splitMode}, splitSide=${this.svgViewer?.splitSide}`);
         
+        // アニメーション実行中は操作を無視
+        if (this.pageFlipManager && this.pageFlipManager.isCurrentlyAnimating()) {
+            console.log('Animation in progress, ignoring nextPage request');
+            return;
+        }
+        
         // 分割表示モード時の直感的なナビゲーション
         if (this.svgViewer && this.svgViewer.splitMode) {
             if (this.svgViewer.splitSide === 'left') {
@@ -294,17 +306,23 @@ class ISCPDFViewer {
                 console.log('Moving to next page, left side');
                 this.svgViewer.splitSide = 'left';
                 this.svgViewer.updateSplitIndicator();
-                this.goToPage(this.currentPage + 1);
+                this.goToPageWithAnimation(this.currentPage + 1, 'next');
                 return;
             }
         }
         
-        // 通常モード
-        this.goToPage(this.currentPage + 1);
+        // 通常モード - アニメーション付きページ遷移
+        this.goToPageWithAnimation(this.currentPage + 1, 'next');
     }
 
     prevPage() {
         console.log(`prevPage called: currentPage=${this.currentPage}, splitMode=${this.svgViewer?.splitMode}, splitSide=${this.svgViewer?.splitSide}`);
+        
+        // アニメーション実行中は操作を無視
+        if (this.pageFlipManager && this.pageFlipManager.isCurrentlyAnimating()) {
+            console.log('Animation in progress, ignoring prevPage request');
+            return;
+        }
         
         // 分割表示モード時の直感的なナビゲーション
         if (this.svgViewer && this.svgViewer.splitMode) {
@@ -318,13 +336,90 @@ class ISCPDFViewer {
                 console.log('Moving to previous page, right side');
                 this.svgViewer.splitSide = 'right';
                 this.svgViewer.updateSplitIndicator();
-                this.goToPage(this.currentPage - 1);
+                this.goToPageWithAnimation(this.currentPage - 1, 'prev');
                 return;
             }
         }
         
-        // 通常モード
-        this.goToPage(this.currentPage - 1);
+        // 通常モード - アニメーション付きページ遷移
+        this.goToPageWithAnimation(this.currentPage - 1, 'prev');
+    }
+
+    /**
+     * アニメーション付きページ遷移
+     * @param {number} pageNumber - 遷移先のページ番号
+     * @param {string} direction - 'next' or 'prev'
+     */
+    async goToPageWithAnimation(pageNumber, direction) {
+        // ページ範囲チェック
+        if (pageNumber < 1 || pageNumber > this.totalPages) {
+            console.log(`Invalid page number: ${pageNumber}`);
+            return;
+        }
+
+        // 同じページの場合は何もしない
+        if (pageNumber === this.currentPage) {
+            return;
+        }
+
+        console.log(`Animating to page ${pageNumber} (direction: ${direction})`);
+
+        // 現在のページ要素を取得
+        const currentElement = this.getCurrentPageElement();
+        
+        // PageFlipManagerが利用可能な場合はアニメーション実行
+        if (this.pageFlipManager && currentElement) {
+            try {
+                // アニメーション実行（非同期）
+                await this.pageFlipManager.animatePageFlip(
+                    direction,
+                    currentElement,
+                    null, // nextElementは内部で処理
+                    () => {
+                        // アニメーション完了後にページを更新
+                        this.goToPage(pageNumber);
+                    }
+                );
+            } catch (error) {
+                console.error('Animation failed, falling back to normal transition:', error);
+                // アニメーション失敗時は通常遷移
+                this.goToPage(pageNumber);
+            }
+        } else {
+            // PageFlipManagerが利用できない場合は通常遷移
+            this.goToPage(pageNumber);
+        }
+    }
+
+    /**
+     * 現在表示されているページ要素を取得
+     * @returns {HTMLElement|null} 現在のページ要素
+     */
+    getCurrentPageElement() {
+        // SVGビューアから現在の要素を取得
+        if (this.svgViewer && this.svgViewer.getCurrentElement) {
+            return this.svgViewer.getCurrentElement();
+        }
+        
+        // フォールバック: セレクタで検索
+        const selectors = [
+            '.svg-container img',
+            '.pdf-viewer-container img',
+            '.svg-container canvas',
+            '.pdf-viewer-container canvas',
+            '#current-image',
+            '.current-page'
+        ];
+        
+        for (const selector of selectors) {
+            const element = document.querySelector(selector);
+            if (element && element.offsetParent !== null) { // 表示されている要素
+                return element;
+            }
+        }
+        
+        console.warn('Could not find current page element');
+        return null;
     }
 
     firstPage() {

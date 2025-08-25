@@ -890,6 +890,40 @@ class PNGViewer {
     }
 
     /**
+     * 現在表示されているページ要素を取得
+     * @returns {HTMLElement|null} 現在のページ要素
+     */
+    getCurrentElement() {
+        // svgContainerから現在表示されている要素を取得
+        if (this.svgContainer) {
+            // 最初に img 要素を探す
+            const imgElement = this.svgContainer.querySelector('img');
+            if (imgElement && imgElement.offsetParent !== null) {
+                return imgElement;
+            }
+            
+            // 次に canvas 要素を探す
+            const canvasElement = this.svgContainer.querySelector('canvas');
+            if (canvasElement && canvasElement.offsetParent !== null) {
+                return canvasElement;
+            }
+            
+            // 他の表示可能な要素を探す
+            const allElements = this.svgContainer.querySelectorAll('*');
+            for (const element of allElements) {
+                if (element.offsetParent !== null && 
+                    (element.tagName === 'IMG' || element.tagName === 'CANVAS' || 
+                     element.classList.contains('current-page'))) {
+                    return element;
+                }
+            }
+        }
+        
+        console.warn('getCurrentElement: No visible element found in container');
+        return null;
+    }
+
+    /**
      * WebPビューアー情報取得
      */
     getViewerInfo() {
