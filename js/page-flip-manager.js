@@ -97,6 +97,7 @@ class PageFlipManager {
                 pointer-events: none;
                 z-index: 1000;
                 perspective: ${this.animationSettings.perspective}px;
+                perspective-origin: center center;
                 overflow: hidden;
             }
             
@@ -108,6 +109,7 @@ class PageFlipManager {
                 transform-style: preserve-3d;
                 backface-visibility: hidden;
                 will-change: transform;
+                transform-origin: left center;
                 transition: none;
             }
             
@@ -116,84 +118,125 @@ class PageFlipManager {
                 max-width: 100%;
                 max-height: 100%;
                 object-fit: contain;
-                border-radius: 8px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                border-radius: 4px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             }
             
-            .flip-page-front,
-            .flip-page-back {
+            /* ページ分割用のレイヤー */
+            .flip-page-layer {
                 position: absolute;
+                top: 0;
+                left: 0;
                 width: 100%;
                 height: 100%;
                 backface-visibility: hidden;
             }
             
-            .flip-page-back {
-                transform: rotateY(180deg);
+            /* 左半分のページ */
+            .flip-page-left {
+                clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+                transform-origin: right center;
             }
             
-            /* 右へのフリップアニメーション */
-            .flip-right {
-                animation: flipToRight ${this.animationSettings.flipDuration}s ${this.animationSettings.easing} forwards;
+            /* 右半分のページ */
+            .flip-page-right {
+                clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+                transform-origin: left center;
             }
             
-            /* 左へのフリップアニメーション */
-            .flip-left {
-                animation: flipToLeft ${this.animationSettings.flipDuration}s ${this.animationSettings.easing} forwards;
+            /* カール効果付きフリップ（右方向） */
+            .flip-curl-right {
+                animation: curlFlipRight ${this.animationSettings.flipDuration}s ${this.animationSettings.easing} forwards;
             }
             
-            /* フェードアニメーション（3D無効時） */
-            .fade-out {
-                animation: fadeOutPage 0.4s ease-out forwards;
+            /* カール効果付きフリップ（左方向） */
+            .flip-curl-left {
+                animation: curlFlipLeft ${this.animationSettings.flipDuration}s ${this.animationSettings.easing} forwards;
             }
             
-            .fade-in {
-                animation: fadeInPage 0.4s ease-in forwards;
-            }
-            
-            @keyframes flipToRight {
+            /* 改良されたキーフレーム - リアルなページカール効果 */
+            @keyframes curlFlipRight {
                 0% {
-                    transform: translate(-50%, -50%) rotateY(0deg);
+                    transform: translate(-50%, -50%) rotateY(0deg) skewY(0deg);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                }
+                25% {
+                    transform: translate(-50%, -50%) rotateY(-45deg) skewY(10deg);
+                    box-shadow: -5px 5px 20px rgba(0,0,0,0.4);
                 }
                 50% {
-                    transform: translate(-50%, -50%) rotateY(-90deg) scale(0.9);
+                    transform: translate(-50%, -50%) rotateY(-90deg) skewY(20deg);
+                    box-shadow: -10px 5px 25px rgba(0,0,0,0.6);
+                }
+                75% {
+                    transform: translate(-50%, -50%) rotateY(-135deg) skewY(10deg);
+                    box-shadow: -5px 5px 20px rgba(0,0,0,0.4);
                 }
                 100% {
-                    transform: translate(-50%, -50%) rotateY(-180deg);
+                    transform: translate(-50%, -50%) rotateY(-180deg) skewY(0deg);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
                 }
             }
             
-            @keyframes flipToLeft {
+            @keyframes curlFlipLeft {
                 0% {
-                    transform: translate(-50%, -50%) rotateY(0deg);
+                    transform: translate(-50%, -50%) rotateY(0deg) skewY(0deg);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                }
+                25% {
+                    transform: translate(-50%, -50%) rotateY(45deg) skewY(-10deg);
+                    box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
                 }
                 50% {
-                    transform: translate(-50%, -50%) rotateY(90deg) scale(0.9);
+                    transform: translate(-50%, -50%) rotateY(90deg) skewY(-20deg);
+                    box-shadow: 10px 5px 25px rgba(0,0,0,0.6);
+                }
+                75% {
+                    transform: translate(-50%, -50%) rotateY(135deg) skewY(-10deg);
+                    box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
                 }
                 100% {
-                    transform: translate(-50%, -50%) rotateY(180deg);
+                    transform: translate(-50%, -50%) rotateY(180deg) skewY(0deg);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
                 }
             }
             
-            @keyframes fadeOutPage {
+            /* フェードアニメーション（フォールバック） */
+            .fade-out-enhanced {
+                animation: fadeOutPageEnhanced 0.5s ease-out forwards;
+            }
+            
+            .fade-in-enhanced {
+                animation: fadeInPageEnhanced 0.5s ease-in forwards;
+            }
+            
+            @keyframes fadeOutPageEnhanced {
                 0% {
                     opacity: 1;
-                    transform: translate(-50%, -50%) scale(1);
+                    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+                }
+                50% {
+                    opacity: 0.5;
+                    transform: translate(-50%, -50%) scale(0.98) rotateY(-15deg);
                 }
                 100% {
                     opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.95);
+                    transform: translate(-50%, -50%) scale(0.95) rotateY(-30deg);
                 }
             }
             
-            @keyframes fadeInPage {
+            @keyframes fadeInPageEnhanced {
                 0% {
                     opacity: 0;
-                    transform: translate(-50%, -50%) scale(1.05);
+                    transform: translate(-50%, -50%) scale(1.02) rotateY(30deg);
+                }
+                50% {
+                    opacity: 0.5;
+                    transform: translate(-50%, -50%) scale(1.01) rotateY(15deg);
                 }
                 100% {
                     opacity: 1;
-                    transform: translate(-50%, -50%) scale(1);
+                    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
                 }
             }
             
@@ -203,21 +246,57 @@ class PageFlipManager {
                     perspective: 800px;
                 }
                 
-                .flip-right,
-                .flip-left {
+                .flip-curl-right,
+                .flip-curl-left {
                     animation-duration: 0.6s;
+                }
+                
+                /* モバイルでは軽量化 */
+                @keyframes curlFlipRight {
+                    0% {
+                        transform: translate(-50%, -50%) rotateY(0deg) skewY(0deg);
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) rotateY(-90deg) skewY(15deg);
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) rotateY(-180deg) skewY(0deg);
+                    }
+                }
+                
+                @keyframes curlFlipLeft {
+                    0% {
+                        transform: translate(-50%, -50%) rotateY(0deg) skewY(0deg);
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) rotateY(90deg) skewY(-15deg);
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) rotateY(180deg) skewY(0deg);
+                    }
                 }
             }
             
-            /* 低性能デバイス用 */
+            /* 低性能デバイス・アクセシビリティ対応 */
             @media (prefers-reduced-motion: reduce) {
-                .flip-right,
-                .flip-left {
+                .flip-curl-right,
+                .flip-curl-left,
+                .fade-out-enhanced,
+                .fade-in-enhanced {
                     animation: none;
+                    transition: opacity 0.3s ease;
                 }
                 
                 .flip-page {
                     transition: opacity 0.3s ease;
+                }
+            }
+            
+            /* 高解像度ディスプレイ対応 */
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+                .flip-page img {
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: crisp-edges;
                 }
             }
         `;
@@ -229,6 +308,9 @@ class PageFlipManager {
             styleSheet.id = 'page-flip-styles';
             styleSheet.textContent = styles;
             document.head.appendChild(styleSheet);
+        } else {
+            // 既存のスタイルを更新
+            styleSheet.textContent = styles;
         }
     }
 
@@ -280,26 +362,33 @@ class PageFlipManager {
         return new Promise((resolve) => {
             // フリップページ要素を作成
             const flipPage = this.createFlipPageElement(currentElement);
-            const animationClass = direction === 'next' ? 'flip-right' : 'flip-left';
             
-            // アニメーション開始
-            flipPage.classList.add(animationClass);
+            // 参考サイトの手法を適用：カール効果付きアニメーション
+            const animationClass = direction === 'next' ? 'flip-curl-right' : 'flip-curl-left';
             
-            // アニメーション完了を待つ
-            const handleAnimationEnd = () => {
-                flipPage.removeEventListener('animationend', handleAnimationEnd);
-                this.cleanupFlipElements();
-                resolve();
-            };
-            
-            flipPage.addEventListener('animationend', handleAnimationEnd);
-            
-            // タイムアウト保護
-            setTimeout(() => {
-                if (this.isAnimating) {
-                    handleAnimationEnd();
-                }
-            }, this.animationDuration + 100);
+            // Web Animations APIでより滑らかなアニメーション
+            if (flipPage.animate && this.performanceSettings.enable3D) {
+                this.performWebAnimationsAPI(flipPage, direction, resolve);
+            } else {
+                // フォールバック：CSSアニメーション
+                flipPage.classList.add(animationClass);
+                
+                // アニメーション完了を待つ
+                const handleAnimationEnd = () => {
+                    flipPage.removeEventListener('animationend', handleAnimationEnd);
+                    this.cleanupFlipElements();
+                    resolve();
+                };
+                
+                flipPage.addEventListener('animationend', handleAnimationEnd);
+                
+                // タイムアウト保護
+                setTimeout(() => {
+                    if (this.isAnimating) {
+                        handleAnimationEnd();
+                    }
+                }, this.animationDuration + 100);
+            }
         });
     }
 
@@ -310,14 +399,118 @@ class PageFlipManager {
         return new Promise((resolve) => {
             const flipPage = this.createFlipPageElement(currentElement);
             
-            // フェードアウト
-            flipPage.classList.add('fade-out');
+            // 改良されたフェードアニメーション
+            flipPage.classList.add('fade-out-enhanced');
             
             setTimeout(() => {
                 this.cleanupFlipElements();
                 resolve();
-            }, 400);
+            }, 500);
         });
+    }
+
+    /**
+     * Web Animations APIを使用した高品質アニメーション（参考サイトの手法）
+     * @param {HTMLElement} flipPage - アニメーションするページ要素
+     * @param {string} direction - 'next' or 'prev'
+     * @param {Function} resolve - Promise解決関数
+     */
+    performWebAnimationsAPI(flipPage, direction, resolve) {
+        // 参考サイトのキーフレーム設計を参考にした改良版
+        let keyframes;
+        
+        if (direction === 'next') {
+            // 右方向フリップのキーフレーム（skewY + rotateY）
+            keyframes = [
+                {
+                    transform: 'translate(-50%, -50%) rotateY(0deg) skewY(0deg)',
+                    boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                    offset: 0
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(-45deg) skewY(10deg)',
+                    boxShadow: '-5px 5px 20px rgba(0,0,0,0.4)',
+                    offset: 0.25
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(-90deg) skewY(20deg)',
+                    boxShadow: '-10px 5px 25px rgba(0,0,0,0.6)',
+                    offset: 0.5
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(-135deg) skewY(10deg)',
+                    boxShadow: '-5px 5px 20px rgba(0,0,0,0.4)',
+                    offset: 0.75
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(-180deg) skewY(0deg)',
+                    boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                    offset: 1
+                }
+            ];
+        } else {
+            // 左方向フリップのキーフレーム
+            keyframes = [
+                {
+                    transform: 'translate(-50%, -50%) rotateY(0deg) skewY(0deg)',
+                    boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                    offset: 0
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(45deg) skewY(-10deg)',
+                    boxShadow: '5px 5px 20px rgba(0,0,0,0.4)',
+                    offset: 0.25
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(90deg) skewY(-20deg)',
+                    boxShadow: '10px 5px 25px rgba(0,0,0,0.6)',
+                    offset: 0.5
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(135deg) skewY(-10deg)',
+                    boxShadow: '5px 5px 20px rgba(0,0,0,0.4)',
+                    offset: 0.75
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateY(180deg) skewY(0deg)',
+                    boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                    offset: 1
+                }
+            ];
+        }
+
+        // アニメーションオプション（参考サイトの設定を参考）
+        const animationOptions = {
+            duration: this.animationDuration,
+            fill: 'forwards',
+            direction: 'normal',
+            easing: this.animationSettings.easing
+        };
+
+        // Web Animations APIでアニメーション実行
+        const animation = flipPage.animate(keyframes, animationOptions);
+
+        // アニメーション完了時の処理
+        animation.onfinish = () => {
+            this.cleanupFlipElements();
+            resolve();
+        };
+
+        // エラー処理
+        animation.oncancel = () => {
+            console.warn('Animation was cancelled');
+            this.cleanupFlipElements();
+            resolve();
+        };
+
+        // タイムアウト保護
+        setTimeout(() => {
+            if (this.isAnimating && animation.playState !== 'finished') {
+                animation.cancel();
+                this.cleanupFlipElements();
+                resolve();
+            }
+        }, this.animationDuration + 200);
     }
 
     /**
